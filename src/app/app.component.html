@@ -7,4 +7,20 @@
   </li>
 </ul>
 <p *ngIf="heroes.length > 3">There are many heroes!</p>
+<input #heroInput/><button (click)="addHero(heroInput.value)">add hero</button>
+
+<h1>生命周期钩子</h1>
+<a href="#hooks">Peek-a-boo: (most) lifecycle hooks</a><br>
+<a href="#onchanges">OnChanges</a><br>
+<a href="#docheck">DoCheck</a><br>
+<a href="#after-view">AfterViewInit & AfterViewChecked</a><br>
+<a href="#after-content">AfterContentInit & AfterContentChecked</a><br>
+<a href="#spy">Spy: directive with OnInit & OnDestroy</a><br>
+<a href="#counter">Counter: OnChanges + Spy directive</a><br>
+
+<a id="hooks"></a>
+<peek-a-boo-parent></peek-a-boo-parent>
+
+<a id="onchanges"></a>
+<on-changes-parent></on-changes-parent>
 
