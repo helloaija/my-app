@@ -1,26 +1,28 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {FormsModule} from '@angular/forms';
 
-import { AppComponent } from './app.component';
-
-import { PeekABooComponent } from "./peek-a-boo.component";
-import { PeekABooParentComponent } from "./peek-a-boo-parent.component";
-import { OnChangeComponent, OnChangeParentComponent } from "./on-change.component";
+import {AppComponent} from './app.component';
+import {AppRoutingModule} from './app-routing.module';
+import {PageNotFoundComponent} from "./common/404/page-not-found.component";
+import {LoginModule} from "./login/login.module";
+import {ContentModule} from "./content/content.module";
+import {UserManageModule} from "./userManage/user-manage.module";
 
 @NgModule({
+  imports: [
+    BrowserModule,
+    FormsModule,
+    LoginModule,
+    ContentModule,
+    UserManageModule,
+    AppRoutingModule
+  ],
   declarations: [
     AppComponent,
-    PeekABooComponent,
-    PeekABooParentComponent,
-    OnChangeComponent,
-    OnChangeParentComponent
+    PageNotFoundComponent
   ],
-  imports: [
-    FormsModule,
-    BrowserModule
-  ],
-  providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
