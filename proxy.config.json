@@ -1,0 +1,11 @@
+{
+  "/platformData.php": {
+    "target": "https://www.p2peye.com",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/platformData.php": ""
+    }
+  }
+}
