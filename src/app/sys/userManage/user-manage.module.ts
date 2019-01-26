@@ -3,8 +3,8 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 
 import {UserManageService} from "./user-manage.service";
-import {UserManageRoutingModule} from "./user-manage-routing.module";
 import {UserManageComponent} from './user-manage.component';
+import {UserManageRoutingModule} from "./user-manage-routing.module";
 
 @NgModule({
   imports: [
@@ -15,6 +15,7 @@ import {UserManageComponent} from './user-manage.component';
   declarations: [
     UserManageComponent
   ],
+  exports: [UserManageComponent],
   providers: [UserManageService]
 })
 export class UserManageModule {

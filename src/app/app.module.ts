@@ -1,14 +1,21 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {PageNotFoundComponent} from "./common/404/page-not-found.component";
 import {LoginModule} from "./login/login.module";
 import {ContentModule} from "./content/content.module";
-import {UserManageModule} from "./userManage/user-manage.module";
-import { HelloWorldComponent } from './hello-world/hello-world.component';
+import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { registerLocaleData } from '@angular/common';
+import zh from '@angular/common/locales/zh';
+
+
+
+registerLocaleData(zh);
 
 @NgModule({
   imports: [
@@ -16,14 +23,18 @@ import { HelloWorldComponent } from './hello-world/hello-world.component';
     FormsModule,
     LoginModule,
     ContentModule,
-    UserManageModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgZorroAntdModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    ReactiveFormsModule
   ],
   declarations: [
     AppComponent,
     PageNotFoundComponent
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  providers: [{ provide: NZ_I18N, useValue: zh_CN }]
 })
 export class AppModule {
 }

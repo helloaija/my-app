@@ -1,66 +1,41 @@
-import {Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router} from '@angular/router';
 import {
-  AbstractControl,
   FormBuilder,
-  FormGroup, Validators
+  FormGroup,
+  Validators
 } from '@angular/forms';
-import {LoginService} from "./login.service";
 
 @Component({
-  templateUrl: "./login.component.html"
+  selector: 'view-login',
+  templateUrl: "./login.component.html",
+  styleUrls: ['./login.component.less']
 })
 
-export class LoginComponent {
-  loginService: LoginService;
-  loginForm: FormGroup;
-  userName: AbstractControl;
-  password: AbstractControl;
-  errorText: string;
+export class LoginComponent implements OnInit {
+  validateForm: FormGroup;
 
-  constructor(loginFb: FormBuilder, loginService: LoginService) {
-    this.loginService = loginService;
-    this.loginForm = loginFb.group({
-      'userName': [''],
-      'password': ['']
-    });
+  submitForm(): void {
+    for (const i in this.validateForm.controls) {
+      this.validateForm.controls[ i ].markAsDirty();
+      this.validateForm.controls[ i ].updateValueAndValidity();
+    }
 
-    this.userName = this.loginForm.controls['userName'];
-    this.password = this.loginForm.controls['password'];
-
-    this.loginForm.valueChanges.subscribe(
-      (form: any) => {
-        this.errorText = ``;
-      }
-    );
-  }
-
-  doLogin(formData: any): void {
-    if (!this.valid(formData)) {
+    if (this.validateForm.invalid) {
       return;
     }
 
-    this.loginService.doLogin()
-      .subscribe((data: Response) => {
-        debugger
-      });
+    this.router.navigateByUrl("content")
   }
 
-  reset(formData: any) {
-    this.loginForm.reset();
-    this.errorText = ``;
-    return false;
+  constructor(private fb: FormBuilder, private router: Router) {
   }
 
-  valid(formData: any): boolean {
-    if (formData.userName == null || formData.userName.trim() == "") {
-      this.errorText = `请输入用户名！`;
-      return false;
-    }
-    if (formData.password == null || formData.password.trim() == "") {
-      this.errorText = `请输入密码！`;
-      return false;
-    }
-
-    return true;
+  ngOnInit(): void {
+    this.validateForm = this.fb.group({
+      userName: [ null, [ Validators.required ] ],
+      password: [ null, [ Validators.required ] ],
+      remember: [ true ]
+    });
   }
 }

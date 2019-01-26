@@ -6,6 +6,7 @@ import {LoginComponent} from '../login/login.component';
 import {LoginService} from "./login.service";
 import {LoginRoutingModule} from "./login-routing.module";
 import {HttpClientModule} from "@angular/common/http";
+import { NgZorroAntdModule } from 'ng-zorro-antd';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import {HttpClientModule} from "@angular/common/http";
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    LoginRoutingModule
+    LoginRoutingModule,
+    NgZorroAntdModule
   ],
   declarations: [
     LoginComponent

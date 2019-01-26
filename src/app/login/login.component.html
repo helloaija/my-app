@@ -1,39 +1,33 @@
 
 <div class="card" style="width: 600px;margin:100px auto">
   <div class="card-body">
-    <form [formGroup]="loginForm" (ngSubmit)="doLogin(loginForm.value)">
-      <div class="form-group row">
-        <label for="userName" class="col-md-2 col-form-label">用户名：</label>
-        <div class="col-md-10">
-          <input class="form-control" id="userName" placeholder="请输入用户名"
-                  [formControl]="loginForm.controls['userName']">
-        </div>
-      </div>
-      <div class="form-group row">
-        <label for="password" class="col-md-2 col-form-label">密码：</label>
-        <div class="col-md-10">
-          <input type="password" class="form-control" id="password"
-                  placeholder="请输入密码" [formControl]="loginForm.controls['password']">
-        </div>
-      </div>
-      <div class="form-group row" ng-show="errorText">
-        <div class="col-md-10 offset-md-2">
-          <div class="form-check">
-            <label class="form-check-label text-danger">
-              <span>{{errorText}}</span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-md-1 offset-md-3">
-          <button type="submit" class="btn btn-primary">登陆</button>
-        </div>
-        <div class="col-md-1 offset-md-1">
-          <button class="btn btn-primary"  (click)="reset(loginForm.value)">重置</button>
-        </div>
-      </div>
+    <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="email">用户名</nz-form-label>
+        <nz-form-control [nzSm]="19" [nzXs]="24">
+            <nz-input-group [nzPrefix]="prefixUser">
+              <input type="text" nz-input formControlName="userName" placeholder="用户名">
+            </nz-input-group>
+            <nz-form-explain *ngIf="validateForm.get('userName').dirty && validateForm.get('userName').errors">请输入用户名！</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="email">密码</nz-form-label>
+        <nz-form-control [nzSm]="19" [nzXs]="24">
+              <nz-input-group [nzPrefix]="prefixLock">
+                <input type="password" nz-input formControlName="password" placeholder="密码">
+              </nz-input-group>
+              <nz-form-explain *ngIf="validateForm.get('password').dirty && validateForm.get('password').errors">请输入密码！</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item nzType="flex" nzJustify="center">
+        <nz-form-control [nzSm]="18" [nzXs]="24">
+          <button nz-button class="login-form-button" [nzType]="'primary'">登录</button>
+        </nz-form-control>
+      </nz-form-item>
     </form>
+    <ng-template #prefixUser><i nz-icon type="user"></i></ng-template>
+    <ng-template #prefixLock><i nz-icon type="lock"></i></ng-template>
   </div>
 </div>
 
