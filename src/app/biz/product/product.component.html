@@ -1,3 +1,73 @@
-<p>
-  hello-world works!
-</p>
+<form nz-form [formGroup]="queryForm" class="ant-advanced-search-form">
+    <nz-form-item>
+        <nz-form-label nzFor="productNo">产品编号</nz-form-label>
+        <nz-form-control>
+            <input nz-input placeholder="产品编号" formControlName="productNo">
+        </nz-form-control>
+        <nz-form-label nzFor="productName">产品名称</nz-form-label>
+        <nz-form-control>
+            <input nz-input placeholder="产品名称" formControlName="productName">
+        </nz-form-control>
+        <nz-form-label nzFor="productName">产品名称323232323</nz-form-label>
+        <nz-form-control>
+            <input nz-input placeholder="产品名称" formControlName="productName">
+        </nz-form-control>
+    </nz-form-item>
+    <nz-form-item style="margin: auto;">
+        <nz-form-label nzFor="productNo1">产品编</nz-form-label>
+        <nz-form-control>
+            <input nz-input placeholder="产品编号" formControlName="productNo1">
+        </nz-form-control>
+        <nz-form-label nzFor="productName1">产品名</nz-form-label>
+        <nz-form-control>
+            <input nz-input placeholder="产品名称" formControlName="productName1">
+        </nz-form-control>
+
+        <div class="queryFormBtn">
+            <button nz-button (click)="query()">查询</button>
+            <button nz-button (click)="resetForm()">清除</button>
+            <button nz-button (click)="showAddForm()">添加</button>
+        </div>
+    </nz-form-item>
+</form>
+
+<nz-table #ajaxTable
+          nzBordered="true"
+          nzShowSizeChanger
+          [nzFrontPagination]="false"
+          [nzData]="dataSet"
+          [nzLoading]="loading"
+          [nzTotal]="total"
+          [(nzPageIndex)]="pageIndex"
+          [(nzPageSize)]="pageSize"
+          (nzPageIndexChange)="searchData()"
+          (nzPageSizeChange)="searchData(true)"
+          [nzScroll]="{ x:'300px',y:'500px'}">
+    <thead (nzSortChange)="sort($event)" nzSingleSort>
+    <tr>
+        <th nzShowSort nzSortKey="name"nzWidth="150px">Name</th>
+        <th nzShowFilter [nzFilters]="filterGender" (nzFilterChange)="updateFilter($event)" nzWidth="150px">Gender</th>
+        <th nzShowSort nzSortKey="email" nzWidth="250px"><span>Email</span></th>
+        <th><span>操作</span></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of ajaxTable.data">
+        <td>{{data.name.first}} {{data.name.last}}</td>
+        <td>{{data.gender}}</td>
+        <td>{{data.email}}</td>
+        <td>
+            <a href="#">Action 一 {{data.name}}</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a href="#">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</nz-table>
+
+<!--添加表单-->
+<nz-modal [(nzVisible)]="isAddFormVisible" nzTitle="Modal Title" nzKeyboard="false" nzMaskClosable="false"
+          (nzOnCancel)="addFormHandleCancel()" (nzOnOk)="addFormHandleOk()" [nzOkLoading]="isAddFormOkLoading"
+          nzWidth="830px">
+    <view-product-add #productaddcomponent></view-product-add>
+</nz-modal>

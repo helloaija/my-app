@@ -35,7 +35,7 @@
       <nz-content style="background:#fff; padding: 5px; min-height: 280px;">
         <nz-tabset [nzType]="'card'" [(nzSelectedIndex)]="selectedIndex">
           <nz-tab *ngFor="let tab of tabs; let i = index" [nzTitle]="titleTemplate">
-            <ng-template #titleTemplate>
+            <ng-template #titleTemplate >
               <div>
                 {{ tab }}
                 <i nz-icon *ngIf="i != 0" type="close" (click)="closeTab(tab)" class="ant-tabs-close-x"></i>
