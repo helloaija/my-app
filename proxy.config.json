@@ -1,11 +1,18 @@
 {
-  "/platformData.php": {
-    "target": "https://www.p2peye.com",
+  "/login": {
+    "target": "http://www.stone.com:8080",
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true,
     "pathRewrite": {
-      "^/platformData.php": ""
+    }
+  },
+  "/admin": {
+    "target": "http://www.stone.com:8080",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
     }
   }
 }

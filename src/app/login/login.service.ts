@@ -4,11 +4,13 @@ import {HttpClient} from "@angular/common/http";
 
 @Injectable()
 export class LoginService {
-  constructor(private http: HttpClient) {
+    constructor(private http: HttpClient) {
 
-  }
+    }
 
-  doLogin() {
-    return this.http.get(`/platformData.php?mod=issue&ajax=1&action=getIssueHistogram&province_id=0`);
-  }
+    doLogin(username: string, password: string) {
+        let params = {username: username, password: password};
+
+        return this.http.post("/login", null, {params: params});
+    }
 }

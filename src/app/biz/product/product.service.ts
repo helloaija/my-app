@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 @Injectable()
 export class ProductService {
     randomUserUrl = 'https://api.randomuser.me/';
+    listProductPage = "/admin/product/listProductPage";
 
     getUsers(pageIndex: number = 1, pageSize: number = 10, sortField: string, sortOrder: string, genders: string[]): Observable<{}> {
         let params = new HttpParams()
@@ -19,6 +20,11 @@ export class ProductService {
         return this.http.get(`${this.randomUserUrl}`, {
             params
         });
+    }
+
+    getProducts(): Observable<Object> {
+        let params = {a : 'a'};
+        return this.http.get(`${this.listProductPage}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
     constructor(private http: HttpClient) {

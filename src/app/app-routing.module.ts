@@ -6,8 +6,7 @@ import {UserManageComponent} from './sys/userManage/user-manage.component';
 import {PageNotFoundComponent} from "./common/404/page-not-found.component";
 
 const appRoutes: Routes = [
-  // {path: 'user-manage', component: UserManageComponent},
-  {path: '', redirectTo: '/login', pathMatch: 'full'},
+  {path: '', redirectTo: '/toLogin', pathMatch: 'full'},
   {path: '404', component: PageNotFoundComponent}
 ];
 

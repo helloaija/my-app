@@ -1,41 +1,65 @@
-import { Component, OnInit } from '@angular/core';
-import { Router} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {
-  FormBuilder,
-  FormGroup,
-  Validators
+    FormBuilder,
+    FormGroup,
+    Validators
 } from '@angular/forms';
+import {LoginService} from "./login.service";
+import {NzMessageService} from "ng-zorro-antd";
+import {CommonService} from "../common/CommonService";
 
 @Component({
-  selector: 'view-login',
-  templateUrl: "./login.component.html",
-  styleUrls: ['./login.component.less']
+    selector: 'view-login',
+    templateUrl: "./login.component.html",
+    styleUrls: ['./login.component.less']
 })
 
 export class LoginComponent implements OnInit {
-  validateForm: FormGroup;
+    validateForm: FormGroup;
+    isSpinning = false;
 
-  submitForm(): void {
-    for (const i in this.validateForm.controls) {
-      this.validateForm.controls[ i ].markAsDirty();
-      this.validateForm.controls[ i ].updateValueAndValidity();
+    submitForm(): void {
+        this.isSpinning = true;
+        for (let i in this.validateForm.controls) {
+            this.validateForm.controls[i].markAsDirty();
+            this.validateForm.controls[i].updateValueAndValidity();
+        }
+
+        if (this.validateForm.invalid) {
+            this.isSpinning = false;
+            return;
+        }
+
+        let username = this.validateForm.controls["userName"].value;
+        let password = this.validateForm.controls["password"].value;
+        this.loginService.doLogin(username, password).subscribe(res => {
+            if ('0000' == res['resultCode']) {
+                // 保存token
+                this.commonServie.setJwtToken(res['result']);
+                this.router.navigateByUrl("content");
+            } else {
+                this.messageBar.create('error', res['resultMessage']);
+            }
+            this.isSpinning = false;
+        }, error => {
+            this.messageBar.create('error', `系统异常`);
+            this.isSpinning = false;
+        });
     }
 
-    if (this.validateForm.invalid) {
-      return;
+    constructor(private fb: FormBuilder,
+                private router: Router,
+                private loginService: LoginService,
+                private messageBar: NzMessageService,
+                private commonServie: CommonService) {
     }
 
-    this.router.navigateByUrl("content")
-  }
-
-  constructor(private fb: FormBuilder, private router: Router) {
-  }
-
-  ngOnInit(): void {
-    this.validateForm = this.fb.group({
-      userName: [ null, [ Validators.required ] ],
-      password: [ null, [ Validators.required ] ],
-      remember: [ true ]
-    });
-  }
+    ngOnInit(): void {
+        this.validateForm = this.fb.group({
+            userName: [null, [Validators.required]],
+            password: [null, [Validators.required]],
+            remember: [true]
+        });
+    }
 }

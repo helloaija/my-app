@@ -8,10 +8,11 @@ import {PageNotFoundComponent} from "./common/404/page-not-found.component";
 import {LoginModule} from "./login/login.module";
 import {ContentModule} from "./content/content.module";
 import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
+import {AuthInterceptor} from "./AuthInterceptor";
 
 
 
@@ -34,7 +35,8 @@ registerLocaleData(zh);
     PageNotFoundComponent
   ],
   bootstrap: [AppComponent],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN }]
+  providers: [{ provide: NZ_I18N, useValue: zh_CN },
+      { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}]
 })
 export class AppModule {
 }

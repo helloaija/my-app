@@ -69,10 +69,23 @@ export class ProductComponent implements OnInit {
             this.pageIndex = 1;
         }
         this.loading = true;
-        this.productService.getUsers(this.pageIndex, this.pageSize, this.sortKey, this.sortValue, this.searchGenderList).subscribe((data: any) => {
+        // this.productService.getUsers(this.pageIndex, this.pageSize, this.sortKey, this.sortValue, this.searchGenderList).subscribe((data: any) => {
+        //     this.loading = false;
+        //     this.total = 200;
+        //     this.dataSet = data.results;
+        // });
+
+        this.productService.getProducts().subscribe(data => {
             this.loading = false;
-            this.total = 200;
-            this.dataSet = data.results;
+            if ("0000" == data['resultCode']) {
+                let result = data['result'];
+                this.total = result['totalCount'];
+                this.dataSet = result['recordList'];
+            }
+            alert(data)
+        }, error => {
+            this.loading = false;
+            alert(JSON.stringify(error))
         });
     }
 
