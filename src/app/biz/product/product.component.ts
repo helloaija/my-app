@@ -2,10 +2,11 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProductService} from './product.service';
 import {ProductAddComponent} from './product-add.component';
+import {finalize} from 'rxjs/operators';
 
 @Component({
     selector: 'view-product',
-    templateUrl: "./product.component.html",
+    templateUrl: './product.component.html',
     styleUrls: ['./product.component.less']
 })
 
@@ -26,7 +27,7 @@ export class ProductComponent implements OnInit {
     isAddFormVisible = false;
     isAddFormOkLoading = false;
     // productaddcomponent驼峰命名会找不到组件
-    @ViewChild("productaddcomponent")
+    @ViewChild('productaddcomponent')
     private productAddComponent: ProductAddComponent;
 
     query(): void {
@@ -52,8 +53,8 @@ export class ProductComponent implements OnInit {
     }
 
     filterGender = [
-        { text: 'male', value: 'male' },
-        { text: 'female', value: 'female' }
+        {text: 'male', value: 'male'},
+        {text: 'female', value: 'female'}
     ];
 
     searchGenderList: string[] = [];
@@ -69,23 +70,19 @@ export class ProductComponent implements OnInit {
             this.pageIndex = 1;
         }
         this.loading = true;
-        // this.productService.getUsers(this.pageIndex, this.pageSize, this.sortKey, this.sortValue, this.searchGenderList).subscribe((data: any) => {
-        //     this.loading = false;
-        //     this.total = 200;
-        //     this.dataSet = data.results;
-        // });
 
-        this.productService.getProducts().subscribe(data => {
+        // 请求产品数据
+        this.productService.getProducts().pipe(
+            finalize(() => {
+                this.loading = false;
+            })
+        ).subscribe(data => {
             this.loading = false;
-            if ("0000" == data['resultCode']) {
+            if ('0000' == data['resultCode']) {
                 let result = data['result'];
                 this.total = result['totalCount'];
                 this.dataSet = result['recordList'];
             }
-            alert(data)
-        }, error => {
-            this.loading = false;
-            alert(JSON.stringify(error))
         });
     }
 
