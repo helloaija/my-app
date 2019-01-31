@@ -31,6 +31,11 @@ export class ProductComponent implements OnInit {
     @ViewChild('productaddcomponent')
     private productAddComponent: ProductAddComponent;
 
+    // 确认框属性
+    isConfirmVisible = false;
+
+    // 当前操作产品
+    currentOptProduct = {};
     productTypeOfOption = [{value: 'PESTICIDE', label: '农药'}, {value: 'MANURE', label: '化肥'}];
 
     constructor(private fb: FormBuilder, private productService: ProductService,
@@ -122,9 +127,39 @@ export class ProductComponent implements OnInit {
                     this.messageBar.create('error', data['resultMessage']);
                 }
             });
-
         }
+    }
 
+    /**
+     * 删除产品
+     * @param productId
+     */
+    delProduct(product): void {
+        this.isConfirmVisible = true;
+        this.currentOptProduct = product;
+    }
+
+    /**
+     * 确认对话框-关闭
+     */
+    confirmHandleCancel(): void {
+        this.isConfirmVisible = false;
+    }
+
+    /**
+     * 确认对话框-确认
+     */
+    confirmHandleOk(): void {
+        this.isConfirmVisible = false;
+
+        this.productService.delProduct(this.currentOptProduct['id']).subscribe(data => {
+            if ('0000' == data['resultCode']) {
+                this.messageBar.create('info', '删除成功');
+                this.searchData(true);
+            } else {
+                this.messageBar.create('error', data['resultMessage']);
+            }
+        });
     }
 
 }

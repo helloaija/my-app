@@ -66,11 +66,11 @@
         <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
         <td>{{data.remark}}</td>
         <td>
-            <a href="#">详情</a>
+            <a href="javascript:void(0);">详情</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a href="#">修改</a>
+            <a href="javascript:void(0);">修改</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a href="#">删除</a>
+            <a href="javascript:void(0);" (click)="delProduct(data)">删除</a>
         </td>
     </tr>
     </tbody>
@@ -81,4 +81,8 @@
           (nzOnCancel)="addFormHandleCancel()" (nzOnOk)="addFormHandleOk()" [nzOkLoading]="isAddFormOkLoading"
           nzWidth="830px">
     <view-product-add #productaddcomponent></view-product-add>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isConfirmVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">
+    <p>确认删除产品[{{currentOptProduct.title}}]？</p>
 </nz-modal>
