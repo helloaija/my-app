@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { registerLocaleData } from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import {AuthInterceptor} from "./AuthInterceptor";
+import {CommonUtils} from "./common/CommonUtils";
 
 
 
@@ -35,7 +36,7 @@ registerLocaleData(zh);
     PageNotFoundComponent
   ],
   bootstrap: [AppComponent],
-  providers: [{ provide: NZ_I18N, useValue: zh_CN },
+  providers: [{ provide: NZ_I18N, useValue: zh_CN }, CommonUtils,
       { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}]
 })
 export class AppModule {

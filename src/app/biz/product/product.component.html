@@ -1,26 +1,27 @@
 <form nz-form [formGroup]="queryForm" class="ant-advanced-search-form">
     <nz-form-item>
-        <nz-form-label nzFor="productNo">产品编号</nz-form-label>
+        <nz-form-label nzFor="title">产品名称</nz-form-label>
         <nz-form-control>
-            <input nz-input placeholder="产品编号" formControlName="productNo">
+            <input nz-input placeholder="产品名称" formControlName="title">
         </nz-form-control>
-        <nz-form-label nzFor="productName">产品名称</nz-form-label>
+        <nz-form-label nzFor="productType">产品类型</nz-form-label>
         <nz-form-control>
-            <input nz-input placeholder="产品名称" formControlName="productName">
-        </nz-form-control>
-        <nz-form-label nzFor="productName">产品名称323232323</nz-form-label>
-        <nz-form-control>
-            <input nz-input placeholder="产品名称" formControlName="productName">
+            <nz-select style="width: 165px;" formControlName="productType" [nzAllowClear]="true">
+                <nz-option *ngFor="let option of productTypeOfOption" [nzLabel]="option.label"
+                           [nzValue]="option.value"></nz-option>
+            </nz-select>
         </nz-form-control>
     </nz-form-item>
     <nz-form-item style="margin: auto;">
-        <nz-form-label nzFor="productNo1">产品编</nz-form-label>
+        <nz-form-label nzFor="createTimeBegin">创建开始时间</nz-form-label>
         <nz-form-control>
-            <input nz-input placeholder="产品编号" formControlName="productNo1">
+            <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="创建开始时间"
+                            formControlName="createTimeBegin" [nzStyle]="{width: '165px'}"></nz-date-picker>
         </nz-form-control>
-        <nz-form-label nzFor="productName1">产品名</nz-form-label>
+        <nz-form-label nzFor="createTimeEnd">创建结束时间</nz-form-label>
         <nz-form-control>
-            <input nz-input placeholder="产品名称" formControlName="productName1">
+            <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="创建结束时间"
+                            formControlName="createTimeEnd" [nzStyle]="{width: '165px'}"></nz-date-picker>
         </nz-form-control>
 
         <div class="queryFormBtn">
@@ -43,30 +44,40 @@
           (nzPageIndexChange)="searchData()"
           (nzPageSizeChange)="searchData(true)"
           [nzScroll]="{ x:'300px',y:'500px'}">
-    <thead (nzSortChange)="sort($event)" nzSingleSort>
+    <thead>
     <tr>
-        <th nzShowSort nzSortKey="name"nzWidth="150px">Name</th>
-        <th nzShowFilter [nzFilters]="filterGender" (nzFilterChange)="updateFilter($event)" nzWidth="150px">Gender</th>
-        <th nzShowSort nzSortKey="email" nzWidth="250px"><span>Email</span></th>
-        <th><span>操作</span></th>
+        <th nzWidth="65px">序号</th>
+        <th nzWidth="350px">产品名称</th>
+        <th nzWidth="120px">价格(元)</th>
+        <th nzWidth="100px">产品类型</th>
+        <th nzWidth="65px">单位</th>
+        <th nzWidth="160px">创建时间</th>
+        <th nzWidth="350px">产品说明</th>
+        <th>操作</th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let data of ajaxTable.data">
+    <tr *ngFor="let data of ajaxTable.data; index as i">
+        <td class="text-center">{{i + 1}}</td>
         <td>{{data.title}}</td>
-        <td>{{data.price}}</td>
-        <td>{{data.productType}}</td>
+        <td class="text-right">{{data.price | currency:'￥'}}</td>
+        <td class="text-center">{{data.productType | productType}}</td>
+        <td class="text-center">{{data.productUnit}}</td>
+        <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+        <td>{{data.remark}}</td>
         <td>
-            <a href="#">Action 一 {{data.name}}</a>
+            <a href="#">详情</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a href="#">Delete</a>
+            <a href="#">修改</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a href="#">删除</a>
         </td>
     </tr>
     </tbody>
 </nz-table>
 
 <!--添加表单-->
-<nz-modal [(nzVisible)]="isAddFormVisible" nzTitle="Modal Title" nzKeyboard="false" nzMaskClosable="false"
+<nz-modal [(nzVisible)]="isAddFormVisible" nzTitle="添加产品" nzKeyboard="false" nzMaskClosable="false"
           (nzOnCancel)="addFormHandleCancel()" (nzOnOk)="addFormHandleOk()" [nzOkLoading]="isAddFormOkLoading"
           nzWidth="830px">
     <view-product-add #productaddcomponent></view-product-add>

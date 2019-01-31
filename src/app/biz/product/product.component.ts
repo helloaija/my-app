@@ -1,8 +1,11 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, OnInit, Pipe, PipeTransform, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {ProductService} from './product.service';
 import {ProductAddComponent} from './product-add.component';
 import {finalize} from 'rxjs/operators';
+import {CommonUtils} from "../../common/CommonUtils";
+import {formatDate} from "@angular/common";
+import {NzMessageService} from "ng-zorro-antd";
 
 @Component({
     selector: 'view-product',
@@ -20,8 +23,6 @@ export class ProductComponent implements OnInit {
     total = 1;
     dataSet = [];
     loading = true;
-    sortValue = null;
-    sortKey = null;
 
     // 添加表单窗口
     isAddFormVisible = false;
@@ -30,49 +31,54 @@ export class ProductComponent implements OnInit {
     @ViewChild('productaddcomponent')
     private productAddComponent: ProductAddComponent;
 
-    query(): void {
-        alert(this.queryForm.controls['productNo'].value);
+    productTypeOfOption = [{value: 'PESTICIDE', label: '农药'}, {value: 'MANURE', label: '化肥'}];
+
+    constructor(private fb: FormBuilder, private productService: ProductService,
+                private commonUtils: CommonUtils, private messageBar: NzMessageService) {
     }
 
+    // 查询按钮
+    query(): void {
+        this.searchData();
+    }
+
+    // 重置查询表单
     resetForm(): void {
         this.queryForm.reset();
     }
 
-    constructor(private fb: FormBuilder, private productService: ProductService) {
-    }
 
     ngOnInit(): void {
         this.queryForm = this.fb.group({
-            productNo: [null, []],
-            productName: [null, []],
-            productNo1: [null, []],
-            productName1: [null, []]
+            title: [null, []],
+            productType: [null, []],
+            createTimeBegin: [null, []],
+            createTimeEnd: [null, []]
         });
 
         this.searchData();
     }
 
-    filterGender = [
-        {text: 'male', value: 'male'},
-        {text: 'female', value: 'female'}
-    ];
-
-    searchGenderList: string[] = [];
-
-    sort(sort: { key: string, value: string }): void {
-        this.sortKey = sort.key;
-        this.sortValue = sort.value;
-        this.searchData();
-    }
-
+    // 加载数据
     searchData(reset: boolean = false): void {
         if (reset) {
             this.pageIndex = 1;
         }
+
         this.loading = true;
 
+        let params = this.queryForm.value;
+        params['currentPage'] = this.pageIndex;
+        params['pageSize'] = this.pageSize;
+        if (params['createTimeBegin']) {
+            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (params['createTimeEnd']) {
+            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+
         // 请求产品数据
-        this.productService.getProducts().pipe(
+        this.productService.getProducts(this.commonUtils.nullTrim(params)).pipe(
             finalize(() => {
                 this.loading = false;
             })
@@ -81,19 +87,17 @@ export class ProductComponent implements OnInit {
             if ('0000' == data['resultCode']) {
                 let result = data['result'];
                 this.total = result['totalCount'];
-                this.dataSet = result['recordList'];
+                this.dataSet = result['recordList'] ? result['recordList'] : [];
             }
         });
-    }
-
-    updateFilter(value: string[]): void {
-        this.searchGenderList = value;
-        this.searchData(true);
     }
 
     // 打开添加表单弹窗
     showAddForm(): void {
         this.isAddFormVisible = true;
+
+        // 重置表单
+        this.productAddComponent.resetForm();
     }
 
     // 添加表单弹窗-取消关闭
@@ -104,10 +108,31 @@ export class ProductComponent implements OnInit {
     // 添加表单弹窗-确定
     addFormHandleOk(): void {
         this.isAddFormOkLoading = true;
-        if (this.productAddComponent.submitForm()) {
-            this.isAddFormOkLoading = true;
+        if (this.productAddComponent.validForm()) {
+            let params = this.productAddComponent.getValues();
+            this.productService.saveProduct(params).pipe(
+                finalize(() => {
+                    this.isAddFormOkLoading = false;
+                })
+            ).subscribe(data => {
+                if ('0000' == data['resultCode']) {
+                    this.searchData(true);
+                    this.isAddFormVisible = false;
+                } else {
+                    this.messageBar.create('error', data['resultMessage']);
+                }
+            });
+
         }
-        this.isAddFormOkLoading = false;
+
     }
 
+}
+
+@Pipe({name: 'productType'})
+export class ProductTypePipe implements PipeTransform {
+    transform(value: string): string {
+        let params = {PESTICIDE: "农药", MANURE: "化肥"};
+        return params[value];
+    }
 }

@@ -5,26 +5,15 @@ import {Observable} from 'rxjs';
 
 @Injectable()
 export class ProductService {
-    randomUserUrl = 'https://api.randomuser.me/';
-    listProductPage = "/admin/product/listProductPage";
+    listProductUrl = "/admin/product/listProductPage";
+    saveProductUrl = '/admin/product/saveProductInfo';
 
-    getUsers(pageIndex: number = 1, pageSize: number = 10, sortField: string, sortOrder: string, genders: string[]): Observable<{}> {
-        let params = new HttpParams()
-            .append('page', `${pageIndex}`)
-            .append('results', `${pageSize}`)
-            .append('sortField', sortField)
-            .append('sortOrder', sortOrder);
-        genders.forEach(gender => {
-            params = params.append('gender', gender);
-        });
-        return this.http.get(`${this.randomUserUrl}`, {
-            params
-        });
+    getProducts(params): Observable<Object> {
+        return this.http.get(`${this.listProductUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
-    getProducts(): Observable<Object> {
-        let params = {a : 'a'};
-        return this.http.get(`${this.listProductPage}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    saveProduct(params): Observable<Object> {
+        return this.http.post(`${this.saveProductUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
     constructor(private http: HttpClient) {
