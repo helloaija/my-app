@@ -33,6 +33,8 @@ export class AuthInterceptor implements HttpInterceptor {
                 this.router.navigateByUrl('toLogin');
             } else if (err['status'] == 403) {
                 this.messageBar.create('error', `无权限访问`);
+            } else if (err['status'] == 500) {
+                this.messageBar.create('error', err['error']);
             } else {
                 this.messageBar.create('error', `系统异常`);
             }

@@ -3,16 +3,16 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CommonUtils} from "../../common/CommonUtils";
 
 @Component({
-    selector: 'view-product-add',
+    selector: 'view-product-edit',
     template: `
-        <form nz-form [nzLayout]="'inline'" [formGroup]="addForm">
+        <form nz-form [nzLayout]="'inline'" [formGroup]="editForm">
             <nz-form-item>
                 <nz-form-label nzFor="title" nzRequired>名称</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
                         <input nz-input formControlName="title" placeholder="产品名称" style="width: 647px;">
                     </nz-input-group>
-                    <nz-form-explain *ngIf="addForm.get('title').dirty && addForm.get('title').errors">
+                    <nz-form-explain *ngIf="editForm.get('title').dirty && editForm.get('title').errors">
                         请输入产品名称！
                     </nz-form-explain>
                 </nz-form-control>
@@ -36,7 +36,7 @@ import {CommonUtils} from "../../common/CommonUtils";
                     <nz-input-group>
                         <input nz-input formControlName="productUnit" type="productUnit" placeholder="单位">
                     </nz-input-group>
-                    <nz-form-explain *ngIf="addForm.get('productUnit').dirty && addForm.get('productUnit').errors">
+                    <nz-form-explain *ngIf="editForm.get('productUnit').dirty && editForm.get('productUnit').errors">
                         请输入产品单位！
                     </nz-form-explain>
                 </nz-form-control>
@@ -49,7 +49,7 @@ import {CommonUtils} from "../../common/CommonUtils";
                                          [nzPlaceHolder]="'价格'" [nzPrecision]="2" style="width: 165px;">
                         </nz-input-number>
                     </nz-input-group>
-                    <nz-form-explain *ngIf="addForm.get('price').dirty && addForm.get('price').errors">
+                    <nz-form-explain *ngIf="editForm.get('price').dirty && editForm.get('price').errors">
                         请输入产品价格！
                     </nz-form-explain>
                 </nz-form-control>
@@ -74,8 +74,9 @@ import {CommonUtils} from "../../common/CommonUtils";
     ]
 })
 
-export class ProductAddComponent implements OnInit {
-    addForm: FormGroup;
+export class ProductEditComponent implements OnInit {
+    initData: any;
+    editForm: FormGroup;
 
     productTypeOfOption = [{value: 'PESTICIDE', label: '农药'}, {value: 'MANURE', label: '化肥'}];
 
@@ -84,12 +85,12 @@ export class ProductAddComponent implements OnInit {
 
     public validForm(): boolean {
 
-        for (const i in this.addForm.controls) {
-            this.addForm.controls[i].markAsDirty();
-            this.addForm.controls[i].updateValueAndValidity();
+        for (const i in this.editForm.controls) {
+            this.editForm.controls[i].markAsDirty();
+            this.editForm.controls[i].updateValueAndValidity();
         }
 
-        if (this.addForm.invalid) {
+        if (this.editForm.invalid) {
             return false;
         }
 
@@ -100,19 +101,32 @@ export class ProductAddComponent implements OnInit {
      * 获取表单数据
      */
     public getValues(): any {
-        return this.commonUtils.nullTrim(this.addForm.value);
+        let formValue = this.commonUtils.nullTrim(this.editForm.value);
+        formValue['id'] = this.initData['id'];
+        return formValue;
     }
 
-    public resetForm() : void {
-        this.addForm.reset();
+    /**
+     * 表单赋值
+     * @param params
+     */
+    public setValues(params): void {
+        this.initData = params;
+        // 重置表单
+        this.editForm.reset();
+        this.editForm.patchValue(params);
+    }
+
+    public resetForm(): void {
+        this.editForm.reset();
         // 设置默认
-        this.addForm.controls['productType'].setValue('MANURE');
+        this.editForm.controls['productType'].setValue('MANURE');
     }
 
     ngOnInit(): void {
-        this.addForm = this.fb.group({
+        this.editForm = this.fb.group({
             title: ['', [Validators.required]],
-            productType: ['MANURE', [Validators.required]],
+            productType: ['', [Validators.required]],
             productUnit: ['', [Validators.required]],
             price: ['', [Validators.required]],
             remark: ['', []]

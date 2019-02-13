@@ -1,3 +1,4 @@
+<nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
 <form nz-form [formGroup]="queryForm" class="ant-advanced-search-form">
     <nz-form-item>
         <nz-form-label nzFor="title">产品名称</nz-form-label>
@@ -68,7 +69,7 @@
         <td>
             <a href="javascript:void(0);">详情</a>
             <nz-divider nzType="vertical"></nz-divider>
-            <a href="javascript:void(0);">修改</a>
+            <a href="javascript:void(0);" (click)="editFormShow(data.id)">修改</a>
             <nz-divider nzType="vertical"></nz-divider>
             <a href="javascript:void(0);" (click)="delProduct(data)">删除</a>
         </td>
@@ -83,6 +84,14 @@
     <view-product-add #productaddcomponent></view-product-add>
 </nz-modal>
 
+<!--更新表单-->
+<nz-modal [(nzVisible)]="isEditFormVisible" nzTitle="修改产品" nzKeyboard="false" nzMaskClosable="false"
+          (nzOnCancel)="editFormHandleCancel()" (nzOnOk)="editFormHandleOk()" [nzOkLoading]="isEditFormOkLoading"
+          nzWidth="830px">
+    <view-product-edit #producteditcomponent></view-product-edit>
+</nz-modal>
+
 <nz-modal [(nzVisible)]="isConfirmVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">
     <p>确认删除产品[{{currentOptProduct.title}}]？</p>
 </nz-modal>
+</nz-spin>

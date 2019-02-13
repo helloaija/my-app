@@ -6,6 +6,7 @@ import {ProductComponent, ProductTypePipe} from './product.component';
 import {ProductService} from './product.service';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {ProductAddComponent} from './product-add.component';
+import {ProductEditComponent} from "./product-edit.component";
 
 @NgModule({
     imports: [
@@ -16,7 +17,7 @@ import {ProductAddComponent} from './product-add.component';
         ProductRoutingModule
     ],
     declarations: [
-        ProductComponent, ProductAddComponent, ProductTypePipe
+        ProductComponent, ProductAddComponent, ProductEditComponent, ProductTypePipe
     ],
     exports: [ProductComponent],
     providers: [ProductService]

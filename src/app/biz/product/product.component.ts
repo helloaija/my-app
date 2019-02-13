@@ -6,6 +6,7 @@ import {finalize} from 'rxjs/operators';
 import {CommonUtils} from "../../common/CommonUtils";
 import {formatDate} from "@angular/common";
 import {NzMessageService} from "ng-zorro-antd";
+import {ProductEditComponent} from "./product-edit.component";
 
 @Component({
     selector: 'view-product',
@@ -31,11 +32,21 @@ export class ProductComponent implements OnInit {
     @ViewChild('productaddcomponent')
     private productAddComponent: ProductAddComponent;
 
+    // 更新表单窗口
+    isEditFormVisible = false;
+    isEditFormOkLoading = false;
+    // producteditcomponent驼峰命名会找不到组件
+    @ViewChild('producteditcomponent')
+    private productEditComponent: ProductEditComponent;
+
     // 确认框属性
     isConfirmVisible = false;
 
+    // 遮罩
+    isSpinning = false;
+
     // 当前操作产品
-    currentOptProduct = {};
+    currentOptProduct = {title: ''};
     productTypeOfOption = [{value: 'PESTICIDE', label: '农药'}, {value: 'MANURE', label: '化肥'}];
 
     constructor(private fb: FormBuilder, private productService: ProductService,
@@ -100,7 +111,6 @@ export class ProductComponent implements OnInit {
     // 打开添加表单弹窗
     showAddForm(): void {
         this.isAddFormVisible = true;
-
         // 重置表单
         this.productAddComponent.resetForm();
     }
@@ -123,6 +133,46 @@ export class ProductComponent implements OnInit {
                 if ('0000' == data['resultCode']) {
                     this.searchData(true);
                     this.isAddFormVisible = false;
+                } else {
+                    this.messageBar.create('error', data['resultMessage']);
+                }
+            });
+        }
+    }
+
+    // 打开更新表单弹窗
+    editFormShow(productId): void {
+        this.isSpinning = true;
+        this.productService.getProduct(productId).pipe(finalize(() => {
+            this.isSpinning = false;
+        })).subscribe(data => {
+            if ('0000' == data['resultCode']) {
+                this.productEditComponent.setValues(data['result']);
+                this.isEditFormVisible = true;
+            } else {
+                this.messageBar.create('error', data['resultMessage']);
+            }
+        });
+    }
+
+    // 更新表单弹窗-取消关闭
+    editFormHandleCancel(): void {
+        this.isEditFormVisible = false;
+    }
+
+    // 更新表单弹窗-确定
+    editFormHandleOk(): void {
+        this.isEditFormOkLoading = true;
+        if (this.productEditComponent.validForm()) {
+            let params = this.productEditComponent.getValues();
+            this.productService.saveProduct(params).pipe(
+                finalize(() => {
+                    this.isEditFormOkLoading = false;
+                })
+            ).subscribe(data => {
+                if ('0000' == data['resultCode']) {
+                    this.searchData(true);
+                    this.isEditFormVisible = false;
                 } else {
                     this.messageBar.create('error', data['resultMessage']);
                 }
