@@ -1,129 +1,89 @@
 <nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
     <nz-layout>
         <nz-header>
-            <button nz-button (click)="query()">新增子节点</button>
-            <button nz-button (click)="query()">删除节点</button>
+            <button nz-button (click)="addNodeClick()">新增子节点</button>
+            <button nz-button (click)="delNodeClick()">删除节点</button>
         </nz-header>
         <nz-layout>
             <nz-sider>
-                <nz-tree
+                <nz-tree #menuTree
                         [nzData]="nodes"
                         nzShowLine="true"
                         (nzClick)="nodeClick($event)"
                         nzExpandAll="true">
                 </nz-tree>
             </nz-sider>
-            <nz-content>
+            <nz-content *ngIf="isEditFormShow">
+                <label class="container-title">{{editFormTitle}}</label>
                 <form nz-form [formGroup]="editForm" (ngSubmit)="submitForm()">
                     <nz-form-item>
-                        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">E-mail</nz-form-label>
+                        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">节点名称</nz-form-label>
                         <nz-form-control [nzSm]="14" [nzXs]="24">
-                            <input nz-input formControlName="email" id="email">
-                            <nz-form-explain *ngIf="editForm.get('email').dirty && editForm.get('email').errors">The
-                                input is not valid E-mail!
+                            <input nz-input formControlName="name" id="name">
+                            <nz-form-explain *ngIf="editForm.get('name').dirty && editForm.get('name').errors">
+                                请输入节点名称！
                             </nz-form-explain>
                         </nz-form-control>
                     </nz-form-item>
+
                     <nz-form-item>
-                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="password" nzRequired>Password</nz-form-label>
+                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="menuCode" nzRequired>节点编码</nz-form-label>
                         <nz-form-control [nzSm]="14" [nzXs]="24">
-                            <input nz-input type="password" id="password" formControlName="password"
-                                   (ngModelChange)="updateConfirmValidator()">
-                            <nz-form-explain
-                                    *ngIf="editForm.get('password').dirty && editForm.get('password').errors">Please
-                                input your password!
+                            <input nz-input id="menuCode" formControlName="menuCode">
+                            <nz-form-explain *ngIf="editForm.get('menuCode').dirty && editForm.get('menuCode').errors">
+                                请输入节点编码！
                             </nz-form-explain>
                         </nz-form-control>
                     </nz-form-item>
+
                     <nz-form-item>
-                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="checkPassword" nzRequired>Confirm Password
+                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="menuType" nzRequired>节点类型
                         </nz-form-label>
                         <nz-form-control [nzSm]="14" [nzXs]="24">
-                            <input nz-input type="password" formControlName="checkPassword" id="checkPassword">
-                            <nz-form-explain
-                                    *ngIf="editForm.get('checkPassword').dirty && editForm.get('checkPassword').errors">
-                                <ng-container *ngIf="editForm.get('checkPassword').hasError('required')">
-                                    Please confirm your password!
-                                </ng-container>
-                                <ng-container *ngIf="editForm.get('checkPassword').hasError('confirm')">
-                                    Two passwords that you enter is inconsistent!
-                                </ng-container>
+                            <nz-select formControlName="menuType">
+                                <nz-option nzLabel="菜单" nzValue="MENU"></nz-option>
+                                <nz-option nzLabel="功能" nzValue="FUN"></nz-option>
+                            </nz-select>
+                            <nz-form-explain *ngIf="editForm.get('menuType').dirty && editForm.get('menuType').errors">
+                                请选择节点类型！
                             </nz-form-explain>
                         </nz-form-control>
                     </nz-form-item>
+
                     <nz-form-item>
-                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nickname" nzRequired>
-          <span>
-            Nickname
-            <i nz-icon nz-tooltip nzTitle="What do you want other to call you" type="question-circle"
-               theme="outline"></i>
-          </span>
-                        </nz-form-label>
+                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="url" nzRequired>节点路径</nz-form-label>
                         <nz-form-control [nzSm]="14" [nzXs]="24">
-                            <input nz-input id="nickname" formControlName="nickname">
-                            <nz-form-explain
-                                    *ngIf="editForm.get('nickname').dirty && editForm.get('nickname').errors">Please
-                                input your nickname!
+                            <input nz-input id="url" formControlName="url">
+                            <nz-form-explain *ngIf="editForm.get('url').dirty && editForm.get('url').errors">
+                                请输入节点编码！
                             </nz-form-explain>
                         </nz-form-control>
                     </nz-form-item>
-                    <nz-form-item>
-                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="phoneNumber" nzRequired>Phone Number
-                        </nz-form-label>
-                        <nz-form-control [nzSm]="14" [nzXs]="24" [nzValidateStatus]="editForm.controls['phoneNumber']">
-                            <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
-                                <ng-template #addOnBeforeTemplate>
-                                    <nz-select formControlName="phoneNumberPrefix" style="width: 70px;">
-                                        <nz-option nzLabel="+86" nzValue="+86"></nz-option>
-                                        <nz-option nzLabel="+87" nzValue="+87"></nz-option>
-                                    </nz-select>
-                                </ng-template>
-                                <input formControlName="phoneNumber" id="'phoneNumber'" nz-input>
-                            </nz-input-group>
-                            <nz-form-explain
-                                    *ngIf="editForm.get('phoneNumber').dirty && editForm.get('phoneNumber').errors">
-                                Please input your phone number!
-                            </nz-form-explain>
-                        </nz-form-control>
-                    </nz-form-item>
-                    <nz-form-item>
-                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="website" nzRequired>Website</nz-form-label>
+
+                    <nz-form-item nz-row style="margin-bottom:8px;">
+                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="url" nzRequired>是否启用</nz-form-label>
+                        <!--<nz-form-control [nzSpan]="14" [nzOffset]="6">-->
                         <nz-form-control [nzSm]="14" [nzXs]="24">
-                            <input nz-input id="website" formControlName="website" placeholder="website">
-                            <nz-form-explain
-                                    *ngIf="editForm.get('website').dirty && editForm.get('website').errors">Please
-                                input website!
-                            </nz-form-explain>
+                            <!--<label nz-checkbox formControlName="status">-->
+                                <!--<span>是否禁用</span>-->
+                            <!--</label>-->
+                            <nz-radio-group formControlName="status">
+                                <label nz-radio nzValue="enable">是</label>
+                                <label nz-radio nzValue="disable">否</label>
+                            </nz-radio-group>
                         </nz-form-control>
                     </nz-form-item>
+
                     <nz-form-item>
-                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="captcha" nzRequired>Captcha</nz-form-label>
+                        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="remark">说明</nz-form-label>
                         <nz-form-control [nzSm]="14" [nzXs]="24">
-                            <div nz-row [nzGutter]="8">
-                                <div nz-col [nzSpan]="12">
-                                    <input nz-input formControlName="captcha" id="captcha">
-                                </div>
-                                <div nz-col [nzSpan]="12">
-                                    <button nz-button (click)="getCaptcha($event)">Get captcha</button>
-                                </div>
-                            </div>
-                            <nz-form-explain
-                                    *ngIf="editForm.get('captcha').dirty && editForm.get('captcha').errors">Please
-                                input the captcha you got!
-                            </nz-form-explain>
-                            <nz-form-extra>We must make sure that your are a human.</nz-form-extra>
+                            <input nz-input id="remark" formControlName="remark">
                         </nz-form-control>
                     </nz-form-item>
+
                     <nz-form-item nz-row style="margin-bottom:8px;">
                         <nz-form-control [nzSpan]="14" [nzOffset]="6">
-                            <label nz-checkbox formControlName="agree">
-                                <span>I have read the <a>agreement</a></span>
-                            </label>
-                        </nz-form-control>
-                    </nz-form-item>
-                    <nz-form-item nz-row style="margin-bottom:8px;">
-                        <nz-form-control [nzSpan]="14" [nzOffset]="6">
-                            <button nz-button nzType="primary">Register</button>
+                            <button nz-button nzType="primary">保存</button>
                         </nz-form-control>
                     </nz-form-item>
                 </form>
@@ -131,3 +91,7 @@
         </nz-layout>
     </nz-layout>
 </nz-spin>
+
+<nz-modal [(nzVisible)]="isConfirmVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">
+    <p>确认删除节点[{{deleteNodeTitle}}]？</p>
+</nz-modal>
