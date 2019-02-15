@@ -1,0 +1,130 @@
+<nz-spin [nzSpinning]="isSpinning" nzTip="加载中..." style="z-index: 9999">
+    <nz-layout>
+        <nz-header>
+            <button nz-button (click)="showAddForm()">新增用户</button>
+        </nz-header>
+        <nz-content>
+            <nz-table #userTable
+                      nzBordered="true"
+                      [nzFrontPagination]="false"
+                      nzShowSizeChanger="true"
+                      [nzData]="table.dataSet"
+                      [nzLoading]="table.loading"
+                      [nzTotal]="table.total"
+                      [(nzPageIndex)]="table.pageIndex"
+                      [(nzPageSize)]="table.pageSize"
+                      [nzScroll]="{ x:'300px',y:'500px'}"
+                      (nzPageIndexChange)="loadRoles()"
+                      (nzPageSizeChange)="loadRoles(true)">
+                <thead>
+                <tr>
+                    <th nzWidth="65px">序号</th>
+                    <th nzWidth="100px">用户名</th>
+                    <th nzWidth="120px">真实姓名</th>
+                    <th nzWidth="350px">电话号码</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let data of userTable.data; index as i">
+                    <td class="text-center">{{i + 1}}</td>
+                    <td>{{data.userName}}</td>
+                    <td>{{data.realName}}</td>
+                    <td>{{data.telPhone}}</td>
+                    <td>
+                        <a href="javascript:void(0);" (click)="showEditForm(data)">修改</a>
+                        <nz-divider nzType="vertical"></nz-divider>
+                        <a href="javascript:void(0);" (click)="delUser(data)">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </nz-table>
+        </nz-content>
+    </nz-layout>
+
+    <nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
+               [nzMaskClosable]="false" [nzWidth]="320"
+               [nzVisible]="drawer.visible" [nzTitle]="drawer.title"
+               (nzOnClose)="closeRoleForm()">
+        <form nz-form [formGroup]="userForm">
+            <input nz-input formControlName="id" type="hidden">
+
+            <div nz-row nzGutter="8">
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label nzFor="userName" nzRequired>用户名</nz-form-label>
+                        <nz-form-control>
+                            <nz-input-group>
+                                <input nz-input formControlName="userName" placeholder="请输入用户名">
+                            </nz-input-group>
+                            <nz-form-explain *ngIf="userForm.get('userName').dirty && userForm.get('userName').errors">
+                                请输入产品单位！
+                            </nz-form-explain>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+            </div>
+
+            <div nz-row nzGutter="8">
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label nzFor="realName" nzRequired>真实姓名</nz-form-label>
+                        <nz-form-control>
+                            <nz-input-group>
+                                <input nz-input formControlName="realName" placeholder="请输入真实姓名">
+                            </nz-input-group>
+                            <nz-form-explain *ngIf="userForm.get('realName').dirty && userForm.get('realName').errors">
+                                请输入产品单位！
+                            </nz-form-explain>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+            </div>
+
+            <div nz-row nzGutter="8">
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label nzFor="telPhone" nzRequired>手机号码</nz-form-label>
+                        <nz-form-control>
+                            <nz-input-group>
+                                <input nz-input formControlName="telPhone" placeholder="请输入手机号码">
+                            </nz-input-group>
+                            <nz-form-explain *ngIf="userForm.get('telPhone').dirty && userForm.get('telPhone').errors">
+                                请输入产品单位！
+                            </nz-form-explain>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+            </div>
+
+            <div nz-row nzGutter="8">
+                <div nz-col nzSpan="24">
+                    <nz-form-item>
+                        <nz-form-label nzFor="roleId" nzRequired>角色</nz-form-label>
+                        <nz-form-control>
+                            <nz-input-group>
+                                <nz-select style="width: 100%;" nzAllowClear nzPlaceHolder="选择角色" formControlName="roleId">
+                                    <nz-option *ngFor="let role of drawer.roleList" nzLabel="{{role.roleName}}" nzValue="{{role.id}}"></nz-option>
+                                </nz-select>
+                            </nz-input-group>
+                            <nz-form-explain *ngIf="userForm.get('roleId').dirty && userForm.get('roleId').errors">
+                                请选择角色！
+                            </nz-form-explain>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+            </div>
+
+        </form>
+        <div class="footer">
+            <button type="button" (click)="closeRoleForm()" class="ant-btn" style="margin-right: 8px;">
+                <span>取消</span>
+            </button>
+            <button type="button" (click)="saveRole()" class="ant-btn ant-btn-primary"><span>保存</span></button>
+        </div>
+    </nz-drawer>
+</nz-spin>
+
+<nz-modal [(nzVisible)]="confirmModel.isVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">
+    <p>确认删除角色[{{confirmModel.content}}]？</p>
+</nz-modal>
