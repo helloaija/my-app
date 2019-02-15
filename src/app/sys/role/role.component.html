@@ -1,16 +1,21 @@
 <nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
     <nz-layout>
         <nz-header>
-            <button nz-button (click)="showEditForm()">新增角色</button>
+            <button nz-button (click)="showAddForm()">新增角色</button>
         </nz-header>
         <nz-content>
             <nz-table #roleTable
                       nzBordered="true"
                       [nzFrontPagination]="false"
+                      nzShowSizeChanger="true"
                       [nzData]="table.dataSet"
                       [nzLoading]="table.loading"
                       [nzTotal]="table.total"
-                      [nzScroll]="{ x:'300px',y:'500px'}">
+                      [(nzPageIndex)]="table.pageIndex"
+                      [(nzPageSize)]="table.pageSize"
+                      [nzScroll]="{ x:'300px',y:'500px'}"
+                      (nzPageIndexChange)="loadRoles()"
+                      (nzPageSizeChange)="loadRoles(true)">
                 <thead>
                 <tr>
                     <th nzWidth="65px">序号</th>
@@ -27,11 +32,9 @@
                     <td>{{data.roleName}}</td>
                     <td>{{data.remark}}</td>
                     <td>
-                        <a href="javascript:void(0);">详情</a>
+                        <a href="javascript:void(0);" (click)="showEditForm(data)">修改</a>
                         <nz-divider nzType="vertical"></nz-divider>
-                        <a href="javascript:void(0);" (click)="editFormShow(data.id)">修改</a>
-                        <nz-divider nzType="vertical"></nz-divider>
-                        <a href="javascript:void(0);" (click)="delProduct(data)">删除</a>
+                        <a href="javascript:void(0);" (click)="delRole(data)">删除</a>
                     </td>
                 </tr>
                 </tbody>
@@ -42,22 +45,33 @@
     <nz-drawer [nzBodyStyle]="{ height: 'calc(100% - 55px)', overflow: 'auto', 'padding-bottom':'53px' }"
                [nzMaskClosable]="false" [nzWidth]="720"
                [nzVisible]="drawer.visible" [nzTitle]="drawer.title"
-               (nzOnClose)="closeEditForm()">
-        <form nz-form>
+               (nzOnClose)="closeRoleForm()">
+        <form nz-form [formGroup]="roleForm">
+            <input nz-input formControlName="id" type="hidden">
             <div nz-row nzGutter="8">
                 <div nz-col nzSpan="12">
                     <nz-form-item>
-                        <nz-form-label>角色编码</nz-form-label>
+                        <nz-form-label nzFor="roleCode" nzRequired>角色编码</nz-form-label>
                         <nz-form-control>
-                            <input nz-input placeholder="请输入角色编码">
+                            <nz-input-group>
+                                <input nz-input formControlName="roleCode" placeholder="请输入角色编码">
+                            </nz-input-group>
+                            <nz-form-explain *ngIf="roleForm.get('roleCode').dirty && roleForm.get('roleCode').errors">
+                                请输入产品单位！
+                            </nz-form-explain>
                         </nz-form-control>
                     </nz-form-item>
                 </div>
                 <div nz-col nzSpan="12">
                     <nz-form-item>
-                        <nz-form-label>角色名称</nz-form-label>
+                        <nz-form-label nzFor="roleName" nzRequired>角色名称</nz-form-label>
                         <nz-form-control>
-                            <input nz-input placeholder="请输入角色名称">
+                            <nz-input-group>
+                                <input nz-input formControlName="roleName" placeholder="请输入角色名称">
+                            </nz-input-group>
+                            <nz-form-explain *ngIf="roleForm.get('roleName').dirty && roleForm.get('roleName').errors">
+                                请输入产品单位！
+                            </nz-form-explain>
                         </nz-form-control>
                     </nz-form-item>
                 </div>
@@ -65,34 +79,40 @@
             <div nz-row nzGutter="8">
                 <div nz-col nzSpan="24">
                     <nz-form-item>
-                        <nz-form-label>角色说明</nz-form-label>
+                        <nz-form-label nzFor="remark">角色说明</nz-form-label>
                         <nz-form-control>
-                        <textarea nz-input placeholder="请输入角色说明"
-                                  [nzAutosize]="{ minRows: 4, maxRows: 4 }"></textarea>
+                            <nz-input-group>
+                                <textarea nz-input formControlName="remark" placeholder="请输入角色说明"
+                                          [nzAutosize]="{ minRows: 4, maxRows: 4 }"></textarea>
+                            </nz-input-group>
+                            <nz-form-explain *ngIf="roleForm.get('remark').dirty && roleForm.get('remark').errors">
+                                请输入产品单位！
+                            </nz-form-explain>
                         </nz-form-control>
                     </nz-form-item>
                 </div>
             </div>
         </form>
         <div class="container-tree">
-            <nz-tree
+            <nz-tree #menuTree
                     [nzData]="tree.nodes"
                     nzCheckable="true"
                     nzMultiple="true"
                     nzExpandAll="true"
                     [nzCheckedKeys]="tree.defaultCheckedKeys"
                     [nzExpandedKeys]="tree.defaultExpandedKeys"
-                    [nzSelectedKeys]="tree.defaultSelectedKeys"
-                    (nzClick)="nzEvent($event)"
-                    (nzExpandChange)="nzEvent($event)"
-                    (nzCheckBoxChange)="nzEvent($event)">
+                    [nzSelectedKeys]="tree.defaultSelectedKeys">
             </nz-tree>
         </div>
         <div class="footer">
-            <button type="button" (click)="closeEditForm()" class="ant-btn" style="margin-right: 8px;">
-                <span>Cancel</span>
+            <button type="button" (click)="closeRoleForm()" class="ant-btn" style="margin-right: 8px;">
+                <span>取消</span>
             </button>
-            <button type="button" (click)="closeEditForm()" class="ant-btn ant-btn-primary"><span>Submit</span></button>
+            <button type="button" (click)="saveRole()" class="ant-btn ant-btn-primary"><span>保存</span></button>
         </div>
     </nz-drawer>
 </nz-spin>
+
+<nz-modal [(nzVisible)]="confirmModel.isVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">
+    <p>确认删除角色[{{confirmModel.content}}]？</p>
+</nz-modal>

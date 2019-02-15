@@ -34,7 +34,7 @@ import {CommonUtils} from "../../common/CommonUtils";
                 <nz-form-label nzFor="productUnit" nzRequired>单位</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <input nz-input formControlName="productUnit" type="productUnit" placeholder="单位">
+                        <input nz-input formControlName="productUnit" placeholder="单位">
                     </nz-input-group>
                     <nz-form-explain *ngIf="addForm.get('productUnit').dirty && addForm.get('productUnit').errors">
                         请输入产品单位！
