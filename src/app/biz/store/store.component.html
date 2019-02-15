@@ -1,0 +1,65 @@
+<nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
+<form nz-form [formGroup]="queryForm" class="ant-advanced-search-form">
+    <nz-form-item style="margin: auto;">
+        <nz-form-label nzFor="title">产品名称</nz-form-label>
+        <nz-form-control>
+            <input nz-input placeholder="产品名称" formControlName="title">
+        </nz-form-control>
+        <nz-form-label nzFor="productType">产品类型</nz-form-label>
+        <nz-form-control>
+            <nz-select style="width: 165px;" formControlName="productType" [nzAllowClear]="true">
+                <nz-option *ngFor="let option of productTypeOfOption" [nzLabel]="option.label"
+                           [nzValue]="option.value"></nz-option>
+            </nz-select>
+        </nz-form-control>
+
+        <div class="queryFormBtn">
+            <button nz-button (click)="query()">查询</button>
+            <button nz-button (click)="resetForm()">清除</button>
+        </div>
+    </nz-form-item>
+</form>
+
+<nz-table #ajaxTable
+          nzBordered="true"
+          nzShowSizeChanger
+          [nzFrontPagination]="false"
+          [nzData]="table.dataSet"
+          [nzLoading]="table.loading"
+          [nzTotal]="table.total"
+          [(nzPageIndex)]="table.pageIndex"
+          [(nzPageSize)]="table.pageSize"
+          (nzPageIndexChange)="searchData()"
+          (nzPageSizeChange)="searchData(true)"
+          [nzScroll]="{ x:'300px',y:'500px'}">
+    <thead>
+    <tr>
+        <th nzWidth="45px">序号</th>
+        <th nzWidth="350px">产品名称</th>
+        <th nzWidth="100px">价格(元)</th>
+        <th nzWidth="80px">产品类型</th>
+        <th nzWidth="65px">单位</th>
+        <th nzWidth="85px">剩余数量</th>
+        <th nzWidth="85px">已售数量</th>
+        <th nzWidth="90px">未支付数量</th>
+        <th nzWidth="160px">创建时间</th>
+        <th>产品说明</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of ajaxTable.data; index as i">
+        <td class="text-center">{{i + 1}}</td>
+        <td>{{data.title}}</td>
+        <td class="text-right">{{data.price | currency:'￥'}}</td>
+        <td class="text-center">{{data.productType | productType}}</td>
+        <td class="text-center">{{data.productUnit}}</td>
+        <td class="text-right">{{data.number}}</td>
+        <td class="text-right">{{data.soldNumber}}</td>
+        <td class="text-right">{{data.unpayNumber}}</td>
+        <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+        <td>{{data.remark}}</td>
+    </tr>
+    </tbody>
+</nz-table>
+
+</nz-spin>

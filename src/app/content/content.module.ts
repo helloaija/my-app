@@ -10,7 +10,8 @@ import {MenuManageModule} from '../sys/menuManage/nenu-manage.module';
 import {ContentIndexComponent} from './content-index.component';
 import {ProductManageModule} from '../biz/product/product.module';
 import {RoleModule} from '../sys/role/role.module';
-import {UserModule} from "../sys/user/user.module";
+import {UserModule} from '../sys/user/user.module';
+import {StoreModule} from '../biz/store/store.module';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import {UserModule} from "../sys/user/user.module";
         NgZorroAntdModule,
         MenuManageModule,
         ProductManageModule,
-        RoleModule
+        RoleModule,
+        StoreModule
     ],
     declarations: [
         ContentComponent, ContentIndexComponent

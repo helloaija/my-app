@@ -65,6 +65,13 @@ nav a.active {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.ant-table-tbody>tr>td, .ant-table-thead>tr>th {
+  padding: 8px;
+}
+
+/*.table-th {*/
+  /*padding: 8px;*/
+/*}*/
 
 /*
 Copyright 2017-2018 Google Inc. All Rights Reserved.
