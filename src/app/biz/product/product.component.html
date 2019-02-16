@@ -81,14 +81,14 @@
 <nz-modal [(nzVisible)]="isAddFormVisible" nzTitle="添加产品" nzKeyboard="false" nzMaskClosable="false"
           (nzOnCancel)="addFormHandleCancel()" (nzOnOk)="addFormHandleOk()" [nzOkLoading]="isAddFormOkLoading"
           nzWidth="830px">
-    <view-product-add #productaddcomponent></view-product-add>
+    <view-product-add #productAddComponent></view-product-add>
 </nz-modal>
 
 <!--更新表单-->
 <nz-modal [(nzVisible)]="isEditFormVisible" nzTitle="修改产品" nzKeyboard="false" nzMaskClosable="false"
           (nzOnCancel)="editFormHandleCancel()" (nzOnOk)="editFormHandleOk()" [nzOkLoading]="isEditFormOkLoading"
           nzWidth="830px">
-    <view-product-edit #producteditcomponent></view-product-edit>
+    <view-product-edit #productEditComponent></view-product-edit>
 </nz-modal>
 
 <nz-modal [(nzVisible)]="isConfirmVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">

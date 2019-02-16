@@ -28,16 +28,14 @@ export class ProductComponent implements OnInit {
     // 添加表单窗口
     isAddFormVisible = false;
     isAddFormOkLoading = false;
-    // productaddcomponent驼峰命名会找不到组件
-    @ViewChild('productaddcomponent')
-    private productAddComponent: ProductAddComponent;
+    @ViewChild('productAddComponent')
+    productAddComponent: ProductAddComponent;
 
     // 更新表单窗口
     isEditFormVisible = false;
     isEditFormOkLoading = false;
-    // producteditcomponent驼峰命名会找不到组件
-    @ViewChild('producteditcomponent')
-    private productEditComponent: ProductEditComponent;
+    @ViewChild('productEditComponent')
+    productEditComponent: ProductEditComponent;
 
     // 确认框属性
     isConfirmVisible = false;

@@ -12,6 +12,8 @@ import {ProductManageModule} from '../biz/product/product.module';
 import {RoleModule} from '../sys/role/role.module';
 import {UserModule} from '../sys/user/user.module';
 import {StoreModule} from '../biz/store/store.module';
+import {StockOrderModule} from '../biz/stockOrder/stockOrder.module';
+import {SellOrderModule} from '../biz/sellOrder/sellOrder.module';
 
 
 @NgModule({
@@ -24,7 +26,9 @@ import {StoreModule} from '../biz/store/store.module';
         MenuManageModule,
         ProductManageModule,
         RoleModule,
-        StoreModule
+        StoreModule,
+        StockOrderModule,
+        SellOrderModule
     ],
     declarations: [
         ContentComponent, ContentIndexComponent

@@ -28,9 +28,9 @@
               }
             ],
             "styles": [
+              "src/assets/css/bootstrap.css",
               "./node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
-              "src/styles.css",
-              "src/assets/css/bootstrap.css"
+              "src/styles.css"
             ],
             "scripts": [
 //              "src/assets/js/bootstrap.js"

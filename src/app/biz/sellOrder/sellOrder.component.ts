@@ -1,17 +1,17 @@
 import {Component, OnInit, Pipe, PipeTransform} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {StoreService} from './store.service';
 import {finalize} from 'rxjs/operators';
 import {CommonUtils} from '../../common/CommonUtils';
 import {formatDate} from '@angular/common';
+import {SellOrderService} from './sellOrder.service';
 
 @Component({
-    selector: 'view-store',
-    templateUrl: './store.component.html',
-    styleUrls: ['./store.component.less']
+    selector: 'view-sellOrder',
+    templateUrl: './sellOrder.component.html',
+    styleUrls: ['./sellOrder.component.less']
 })
 
-export class StoreComponent implements OnInit {
+export class SellOrderComponent implements OnInit {
     // 查询框
     queryForm: FormGroup;
 
@@ -29,7 +29,7 @@ export class StoreComponent implements OnInit {
 
     productTypeOfOption = [{value: 'PESTICIDE', label: '农药'}, {value: 'MANURE', label: '化肥'}];
 
-    constructor(private storeService: StoreService, private commonUtils: CommonUtils, private fb: FormBuilder) {
+    constructor(private sellOrderService: SellOrderService, private commonUtils: CommonUtils, private fb: FormBuilder) {
         this.queryForm = this.fb.group({
             title: ['', []],
             productType: ['', []]
@@ -70,7 +70,7 @@ export class StoreComponent implements OnInit {
         }
 
         // 请求产品数据
-        this.storeService.getProducts(this.commonUtils.nullTrim(params)).pipe(
+        this.sellOrderService.getProducts(this.commonUtils.nullTrim(params)).pipe(
             finalize(() => {
                 this.table.loading = false;
             })
