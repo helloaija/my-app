@@ -1,6 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {CommonUtils} from '../../common/CommonUtils';
+import {formatDate} from '@angular/common';
+import {StockOrderService} from './stockOrder.service';
 
 @Component({
     selector: 'view-stock-order-edit',
@@ -145,20 +147,33 @@ import {CommonUtils} from '../../common/CommonUtils';
 
             <br/>
 
-            <div style="height: 45px;background: aliceblue;">
-                <label>进货产品信息</label>
+            <div style="height: 30px;background: aliceblue; line-height: 30px;">
+                <label style="margin-left: 10px;
+                          font-weight: bold;">进货产品信息</label>
                 <button nz-button nzSize="small" (click)="addProductField()"
-                        style="float: right;margin-right: 20px;">增加产品
+                        style="float: right; right: 10px; top: 3px;">增加产品
                 </button>
             </div>
             <div *ngFor="let control of productArray;let i = index">
                 <nz-form-item>
-                    <nz-form-label [nzFor]="control.productControl">产品</nz-form-label>
+                    <input nz-input [formControlName]="control.idControl" type="hidden">
+                    <nz-form-label [nzFor]="control.titleControl">产品</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="请选择产品" [attr.id]="control.id"
-                               [formControlName]="control.productControl">
+                        <!--<input nz-input placeholder="请选择产品"-->
+                        <!--[formControlName]="control.titleControl">-->
+
+                        <nz-select [formControlName]="control.titleControl" (nzScrollToBottom)="loadMore(control, false)"
+                                   (nzOnSearch)="searchProduct(control, $event)"
+                                   nzPlaceHolder="请选择产品" nzAllowClear nzShowSearch nzServerSearch="true" style="width: 160px;">
+                            <nz-option *ngFor="let product of control.selectData.optionList" [nzValue]="product.id"
+                                       [nzLabel]="product.title"></nz-option>
+                            <nz-option *ngIf="control.selectData.isLoading" nzDisabled nzCustomContent>
+                                <i nz-icon type="loading" class="loading-icon"></i> Loading Data...
+                            </nz-option>
+                        </nz-select>
+
                         <nz-form-explain
-                                *ngIf="editForm.get(control.productControl).dirty && editForm.get(control.productControl).errors">
+                                *ngIf="editForm.get(control.titleControl).dirty && editForm.get(control.titleControl).errors">
                             请选择产品！
                         </nz-form-explain>
                     </nz-form-control>
@@ -166,7 +181,7 @@ import {CommonUtils} from '../../common/CommonUtils';
                 <nz-form-item>
                     <nz-form-label [nzFor]="control.priceControl">单价</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="请填写单价" [attr.id]="control.id"
+                        <input nz-input placeholder="请填写单价" [attr.id]="control.index"
                                [formControlName]="control.priceControl">
                         <nz-form-explain
                                 *ngIf="editForm.get(control.priceControl).dirty && editForm.get(control.priceControl).errors">
@@ -177,7 +192,7 @@ import {CommonUtils} from '../../common/CommonUtils';
                 <nz-form-item>
                     <nz-form-label [nzFor]="control.numberControl">数量</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="请填写数量" [attr.id]="control.id"
+                        <input nz-input placeholder="请填写数量" [attr.id]="control.index"
                                [formControlName]="control.numberControl" style="width: 100px;">
                         <i nz-icon type="minus-circle-o" class="dynamic-delete-button" (click)="removeProductField(control, $event)"
                            style="margin-left: 15px;"></i>
@@ -202,9 +217,9 @@ export class StockOrderEditComponent implements OnInit {
 
     orderStatusOfOption = [{name: '未支付', value: 'UNPAY'}, {name: '已支付', value: 'HASPAY'}];
 
-    productArray: Array<{ id: number, productControl: string, priceControl: string, numberControl: string }> = [];
+    productArray: Array<{ index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string, selectData: any }> = [];
 
-    constructor(private fb: FormBuilder, private commonUtils: CommonUtils) {
+    constructor(private fb: FormBuilder, private commonUtils: CommonUtils, private stockOrderService: StockOrderService) {
         this.editForm = this.fb.group({
             id: ['', []],
             orderAmount: ['', [Validators.required]],
@@ -222,7 +237,6 @@ export class StockOrderEditComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.addProductField();
     }
 
     public validForm(): boolean {
@@ -244,7 +258,19 @@ export class StockOrderEditComponent implements OnInit {
      */
     public getValues(): any {
         let formValue = this.commonUtils.nullTrim(this.editForm.value);
-        return formValue;
+        formValue['finishTime'] = formatDate(formValue['finishTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        formValue['payTime'] = formatDate(formValue['payTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        let params = {};
+
+        Object.keys(formValue).forEach(function (key) {
+            if (key.startsWith('stockProductList')) {
+                params[key.replace('_', '.')] = formValue[key];
+            } else {
+                params[key] = formValue[key];
+            }
+        });
+
+        return params;
     }
 
     /**
@@ -255,10 +281,36 @@ export class StockOrderEditComponent implements OnInit {
         // 重置表单
         this.editForm.reset();
         this.editForm.patchValue(params);
+        this.setProductValues(params['stockProductList']);
     }
 
-    public resetForm(): void {
+    public resetEditForm(): void {
         this.editForm.reset({orderStatus: 'HASPAY'});
+        this.addProductField();
+    }
+
+    /**
+     * 设置产品列表值
+     * @param productList
+     */
+    setProductValues(productList: Array<any>): void {
+        if (productList == null || productList.length == 0) {
+            this.addProductField();
+            return;
+        }
+
+        for (let i = 0; i < productList.length; i++) {
+            const control = {
+                index: i,
+                idControl: `stockProductList[${i}]_id`,
+                titleControl: `stockProductList[${i}]_productTitle`,
+                priceControl: `stockProductList[${i}]_price`,
+                numberControl: `stockProductList[${i}]_number`,
+                selectData: {}
+            };
+            this.productArray.push(control);
+            this.addProductControl(control, productList[i]);
+        }
     }
 
     /**
@@ -269,16 +321,33 @@ export class StockOrderEditComponent implements OnInit {
         if (e) {
             e.preventDefault();
         }
-        const id = (this.productArray.length > 0) ? this.productArray[this.productArray.length - 1].id + 1 : 0;
+        const idx = (this.productArray.length > 0) ? this.productArray[this.productArray.length - 1].index + 1 : 0;
 
         const control = {
-            id, productControl: `product${id}`, priceControl: `price${id}`, numberControl: `number${id}`
+            index: idx,
+            idControl: `stockProductList[${idx}]_id`,
+            titleControl: `stockProductList[${idx}]_productTitle`,
+            priceControl: `stockProductList[${idx}]_price`,
+            numberControl: `stockProductList[${idx}]_number`,
+            selectData: {searchStr: '', optionList: []}
         };
         const index = this.productArray.push(control);
-        console.log(this.productArray[this.productArray.length - 1]);
-        this.editForm.addControl(this.productArray[index - 1].productControl, new FormControl('', Validators.required));
-        this.editForm.addControl(this.productArray[index - 1].priceControl, new FormControl('', Validators.required));
-        this.editForm.addControl(this.productArray[index - 1].numberControl, new FormControl('', Validators.required));
+
+        this.addProductControl(control);
+
+        this.loadMore(control);
+    }
+
+    /**
+     * 添加到FormGroup中
+     * @param control
+     */
+    addProductControl(control: { index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string },
+                      values?: { id: number, title: string, price: number, number: number }): void {
+        this.editForm.addControl(control.idControl, new FormControl(values ? values['id'] : ''));
+        this.editForm.addControl(control.titleControl, new FormControl(values ? values['productTitle'] : '', Validators.required));
+        this.editForm.addControl(control.priceControl, new FormControl(values ? values['price'] : '', Validators.required));
+        this.editForm.addControl(control.numberControl, new FormControl(values ? values['number'] : '', Validators.required));
     }
 
     /**
@@ -286,16 +355,76 @@ export class StockOrderEditComponent implements OnInit {
      * @param i
      * @param e
      */
-    removeProductField(i: { id: number, productControl: string, priceControl: string, numberControl: string }, e: MouseEvent): void {
-        e.preventDefault();
+    removeProductField(i: { index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string, selectData: any }, e?: MouseEvent): void {
+        if (e) {
+            e.preventDefault();
+        }
         if (this.productArray.length > 1) {
             const index = this.productArray.indexOf(i);
             this.productArray.splice(index, 1);
-            console.log(this.productArray);
-            this.editForm.removeControl(i.productControl);
-            this.editForm.removeControl(i.priceControl);
-            this.editForm.removeControl(i.numberControl);
+
+            this.removeProductControl(i);
         }
     }
 
+    /**
+     * 移除出FormGroup
+     * @param control
+     */
+    removeProductControl(control: { index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string }): void {
+        this.editForm.removeControl(control.idControl);
+        this.editForm.removeControl(control.titleControl);
+        this.editForm.removeControl(control.priceControl);
+        this.editForm.removeControl(control.numberControl);
+    }
+
+    clearProductField(): void {
+        for (let i = 0; i < this.productArray.length; i++) {
+            this.removeProductControl(this.productArray[i]);
+        }
+
+        this.productArray = [];
+    }
+
+    /**
+     * 选择产品下拉框-下拉加载
+     * @param control
+     * @param searchStr 搜索文字
+     */
+    loadMore(control: any, reload: boolean = false, searchStr?: string): void {
+        console.log(searchStr);
+
+        if (reload) {
+            // 重新加载
+            control.selectData['optionList'] = [];
+            control.selectData['pageIndex'] = 1;
+        } else {
+            // 滚动加载
+            control.selectData['pageIndex'] = control.selectData['pageIndex'] + 1;
+            if (control.selectData['optionList'].length >= control.selectData['totalCount']) {
+                return;
+            }
+        }
+
+        let params = {title: searchStr ? searchStr : '', currentPage: control.selectData['pageIndex']};
+
+        control.selectData['isLoading'] = true;
+        this.stockOrderService.getProducts(params).subscribe(data => {
+            control.selectData['isLoading'] = false;
+            if (data['result']['recordList'] == null) {
+                data['result']['recordList'] = [];
+            }
+            control.selectData['totalCount'] = data['result']['totalCount'];
+            control.selectData['optionList'] = [...control.selectData['optionList'], ...data['result']['recordList']];
+        });
+    }
+
+    /**
+     * 选择产品下拉框-文字搜索
+     * @param control
+     */
+    searchProduct(control, e: EventEmitter<string>): void {
+        console.log("searchProduct---", String(e));
+        this.loadMore(control, true, String(e));
+    }
 }

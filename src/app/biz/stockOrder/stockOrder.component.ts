@@ -101,7 +101,7 @@ export class StockOrderComponent implements OnInit {
      * 打开弹窗-新增
      */
     showAddForm(): void {
-        this.stockOrderEdit.resetForm();
+        this.stockOrderEdit.resetEditForm();
         this.editModel.title = `新增进货单`;
         this.editModel.isVisible = true;
     }
@@ -135,13 +135,28 @@ export class StockOrderComponent implements OnInit {
     editFormHandleOk(): void {
         let params = this.stockOrderEdit.getValues();
         console.log(params);
-        // this.editModel.isVisible = false;
+
+        this.editModel.isOkLoading = true;
+        this.stockOrderService.addStockOrder(params).pipe(
+            finalize(() => {
+                this.editModel.isOkLoading = false;
+                // this.editModel.isVisible = false;
+            })
+        ).subscribe(resp => {
+            if ('0000' == resp['resultCode']) {
+                this.searchData(true);
+                this.messageService.create('info', '新增进货单成功！');
+            } else {
+                this.messageService.create('error', resp['resultMessage']);
+            }
+        });
     }
 
     /**
      * 编辑表单-取消
      */
     editFormHandleCancel(): void {
+        this.stockOrderEdit.clearProductField();
         this.editModel.isVisible = false;
     }
 }
