@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {CommonUtils} from '../../common/CommonUtils';
 import {formatDate} from '@angular/common';
@@ -155,14 +155,13 @@ import {StockOrderService} from './stockOrder.service';
                 </button>
             </div>
             <div *ngFor="let control of productArray;let i = index">
-                <nz-form-item>
-                    <input nz-input [formControlName]="control.idControl" type="hidden">
-                    <nz-form-label [nzFor]="control.titleControl">产品</nz-form-label>
-                    <nz-form-control>
-                        <!--<input nz-input placeholder="请选择产品"-->
-                        <!--[formControlName]="control.titleControl">-->
+                <input nz-input [formControlName]="control.idControl" type="hidden">
+                <input nz-input [formControlName]="control.titleControl" type="hidden">
 
-                        <nz-select [formControlName]="control.titleControl" (nzScrollToBottom)="loadMore(control, false)"
+                <nz-form-item>
+                    <nz-form-label [nzFor]="control.productIdControl">产品</nz-form-label>
+                    <nz-form-control>
+                        <nz-select [formControlName]="control.productIdControl" (nzScrollToBottom)="loadMore(control, false)"
                                    (nzOnSearch)="searchProduct(control, $event)"
                                    nzPlaceHolder="请选择产品" nzAllowClear nzShowSearch nzServerSearch="true" style="width: 160px;">
                             <nz-option *ngFor="let product of control.selectData.optionList" [nzValue]="product.id"
@@ -217,9 +216,9 @@ export class StockOrderEditComponent implements OnInit {
 
     orderStatusOfOption = [{name: '未支付', value: 'UNPAY'}, {name: '已支付', value: 'HASPAY'}];
 
-    productArray: Array<{ index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string, selectData: any }> = [];
+    productArray: Array<StockProduct> = [];
 
-    constructor(private fb: FormBuilder, private commonUtils: CommonUtils, private stockOrderService: StockOrderService) {
+    constructor(private fb: FormBuilder, private commonUtils: CommonUtils, private stockOrderService: StockOrderService, private el: ElementRef) {
         this.editForm = this.fb.group({
             id: ['', []],
             orderAmount: ['', [Validators.required]],
@@ -300,16 +299,13 @@ export class StockOrderEditComponent implements OnInit {
         }
 
         for (let i = 0; i < productList.length; i++) {
-            const control = {
-                index: i,
-                idControl: `stockProductList[${i}]_id`,
-                titleControl: `stockProductList[${i}]_productTitle`,
-                priceControl: `stockProductList[${i}]_price`,
-                numberControl: `stockProductList[${i}]_number`,
-                selectData: {}
-            };
+            const control = new StockProduct(i, `stockProductList[${i}]_id`, `stockProductList[${i}]_productId`, `stockProductList[${i}]_productTitle`,
+                `stockProductList[${i}]_price`, `stockProductList[${i}]_number`, {});
             this.productArray.push(control);
             this.addProductControl(control, productList[i]);
+            this.searchProduct(control, productList[i]['productTitle']);
+            // this.loadMore(control, true, productList[i]['productTitle']);
+            // console.log(this.el.nativeElement.querySelector('.btn1'));
         }
     }
 
@@ -323,28 +319,24 @@ export class StockOrderEditComponent implements OnInit {
         }
         const idx = (this.productArray.length > 0) ? this.productArray[this.productArray.length - 1].index + 1 : 0;
 
-        const control = {
-            index: idx,
-            idControl: `stockProductList[${idx}]_id`,
-            titleControl: `stockProductList[${idx}]_productTitle`,
-            priceControl: `stockProductList[${idx}]_price`,
-            numberControl: `stockProductList[${idx}]_number`,
-            selectData: {searchStr: '', optionList: []}
-        };
+        const control = new StockProduct(idx, `stockProductList[${idx}]_id`, `stockProductList[${idx}]_productId`, `stockProductList[${idx}]_productTitle`,
+            `stockProductList[${idx}]_price`, `stockProductList[${idx}]_number`, {searchStr: '', optionList: []});
+
         const index = this.productArray.push(control);
 
         this.addProductControl(control);
 
-        this.loadMore(control);
+        this.loadMore(control, true);
     }
 
     /**
      * 添加到FormGroup中
      * @param control
      */
-    addProductControl(control: { index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string },
-                      values?: { id: number, title: string, price: number, number: number }): void {
+    addProductControl(control: StockProduct,
+                      values?: { id: number, productId: number, title: string, price: number, number: number }): void {
         this.editForm.addControl(control.idControl, new FormControl(values ? values['id'] : ''));
+        this.editForm.addControl(control.productIdControl, new FormControl(values ? values['productId'] : '', Validators.required));
         this.editForm.addControl(control.titleControl, new FormControl(values ? values['productTitle'] : '', Validators.required));
         this.editForm.addControl(control.priceControl, new FormControl(values ? values['price'] : '', Validators.required));
         this.editForm.addControl(control.numberControl, new FormControl(values ? values['number'] : '', Validators.required));
@@ -355,7 +347,7 @@ export class StockOrderEditComponent implements OnInit {
      * @param i
      * @param e
      */
-    removeProductField(i: { index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string, selectData: any }, e?: MouseEvent): void {
+    removeProductField(i: StockProduct, e?: MouseEvent): void {
         if (e) {
             e.preventDefault();
         }
@@ -371,8 +363,9 @@ export class StockOrderEditComponent implements OnInit {
      * 移除出FormGroup
      * @param control
      */
-    removeProductControl(control: { index: number, idControl: string, titleControl: string, priceControl: string, numberControl: string }): void {
+    removeProductControl(control: StockProduct): void {
         this.editForm.removeControl(control.idControl);
+        this.editForm.removeControl(control.productIdControl);
         this.editForm.removeControl(control.titleControl);
         this.editForm.removeControl(control.priceControl);
         this.editForm.removeControl(control.numberControl);
@@ -424,7 +417,26 @@ export class StockOrderEditComponent implements OnInit {
      * @param control
      */
     searchProduct(control, e: EventEmitter<string>): void {
-        console.log("searchProduct---", String(e));
         this.loadMore(control, true, String(e));
+    }
+}
+
+export class StockProduct {
+    index: number;
+    idControl: string;
+    productIdControl: string;
+    titleControl: string;
+    priceControl: string;
+    numberControl: string;
+    selectData: any;
+
+    constructor(index, idControl, productIdControl, titleControl, priceControl, numberControl, selectData) {
+        this.index = index;
+        this.idControl = idControl;
+        this.productIdControl = productIdControl;
+        this.titleControl = titleControl;
+        this.priceControl = priceControl;
+        this.numberControl = numberControl;
+        this.selectData = selectData;
     }
 }
