@@ -1,9 +1,11 @@
-import {Component, OnInit, Pipe, PipeTransform} from '@angular/core';
+import {Component, OnInit, Pipe, PipeTransform, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {finalize} from 'rxjs/operators';
 import {CommonUtils} from '../../common/CommonUtils';
 import {formatDate} from '@angular/common';
-import {SellOrderService} from './sellOrder.service';
+import {NzMessageService} from 'ng-zorro-antd';
+import {SellOrderEditComponent} from "./sellOrder-edit.component";
+import {SellOrderService} from "./sellOrder.service";
 
 @Component({
     selector: 'view-sellOrder',
@@ -21,24 +23,54 @@ export class SellOrderComponent implements OnInit {
         pageSize: 10,
         total: 1,
         dataSet: [],
-        loading: true
+        loading: true,
+        operationOrder: null,
+        filterParams: {}
     };
 
     // 遮罩
     isSpinning = false;
 
-    productTypeOfOption = [{value: 'PESTICIDE', label: '农药'}, {value: 'MANURE', label: '化肥'}];
+    editModel = {
+        isVisible: false,
+        title: '',
+        isOkLoading: false
+    };
 
-    constructor(private sellOrderService: SellOrderService, private commonUtils: CommonUtils, private fb: FormBuilder) {
+    confirmModel = {
+        isVisible: false,
+        orderNumber: ''
+    };
+
+    @ViewChild('sellEditComponent')
+    sellOrderEdit: SellOrderEditComponent;
+
+    orderStatusOfOption = [{name: '未支付', value: 'UNPAY'}, {name: '已支付', value: 'HASPAY'}];
+
+    constructor(private sellOrderService: SellOrderService, private commonUtils: CommonUtils, private fb: FormBuilder,
+                private messageService: NzMessageService) {
         this.queryForm = this.fb.group({
-            title: ['', []],
-            productType: ['', []]
+            orderNumber: ['', []],
+            orderStatus: ['', []],
+            createTimeBegin: ['', []],
+            createTimeEnd: ['', []]
         });
     }
 
     // 查询按钮
     query(): void {
-        this.searchData();
+        let params = this.queryForm.value;
+
+        if (params['createTimeBegin']) {
+            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (params['createTimeEnd']) {
+            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+
+        this.table.filterParams = this.commonUtils.nullTrim(params);
+
+        this.searchData(true);
     }
 
     // 重置查询表单
@@ -57,25 +89,16 @@ export class SellOrderComponent implements OnInit {
             this.table.pageIndex = 1;
         }
 
+        this.table.filterParams['currentPage'] = this.table.pageIndex;
+        this.table.filterParams['pageSize'] = this.table.pageSize;
+
         this.table.loading = true;
-
-        let params = this.queryForm.value;
-        params['currentPage'] = this.table.pageIndex;
-        params['pageSize'] = this.table.pageSize;
-        if (params['createTimeBegin']) {
-            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
-        if (params['createTimeEnd']) {
-            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
-
-        // 请求产品数据
-        this.sellOrderService.getProducts(this.commonUtils.nullTrim(params)).pipe(
+        // 请求订单数据
+        this.sellOrderService.getStockOrders(this.table.filterParams).pipe(
             finalize(() => {
                 this.table.loading = false;
             })
         ).subscribe(data => {
-            this.table.loading = false;
             if ('0000' == data['resultCode']) {
                 let result = data['result'];
                 this.table.total = result['totalCount'];
@@ -83,12 +106,137 @@ export class SellOrderComponent implements OnInit {
             }
         });
     }
+
+    /**
+     * 打开弹窗-新增
+     */
+    showAddForm(): void {
+        this.sellOrderEdit.resetEditForm();
+        this.editModel.title = `新增进货单`;
+        this.editModel.isVisible = true;
+    }
+
+    /**
+     * 打开弹窗-新增
+     * @param data
+     */
+    showUpdateForm(data): void {
+        this.editModel.title = `编辑进货单[${data['orderNumber']}]`;
+
+        this.isSpinning = true;
+        this.sellOrderService.getStockOrder(data.id).pipe(
+            finalize(() => {
+                this.isSpinning = false;
+            })
+        ).subscribe(resp => {
+            if ('0000' == resp['resultCode']) {
+                this.sellOrderEdit.setValues(resp['result']);
+            } else {
+                this.messageService.create('error', resp['resultMessage']);
+            }
+        });
+
+        this.editModel.isVisible = true;
+    }
+
+    /**
+     * 编辑表单-确认
+     */
+    editFormHandleOk(): void {
+        if (!this.sellOrderEdit.validForm()) {
+            return;
+        }
+
+        let params = this.sellOrderEdit.getValues();
+        console.log(params);
+
+        if (params['id']) {
+            // 更新
+            this.editModel.isOkLoading = true;
+            this.sellOrderService.updateStockOrder(params).pipe(
+                finalize(() => {
+                    this.editModel.isOkLoading = false;
+                })
+            ).subscribe(resp => {
+                if ('0000' == resp['resultCode']) {
+                    this.editFormHandleCancel();
+                    this.searchData(true);
+                    this.messageService.create('info', '更新进货单成功！');
+                } else {
+                    this.messageService.create('error', resp['resultMessage']);
+                }
+            });
+        } else {
+            // 新增
+            this.editModel.isOkLoading = true;
+            this.sellOrderService.addStockOrder(params).pipe(
+                finalize(() => {
+                    this.editModel.isOkLoading = false;
+                })
+            ).subscribe(resp => {
+                if ('0000' == resp['resultCode']) {
+                    this.editFormHandleCancel();
+                    this.searchData(true);
+                    this.messageService.create('info', '新增进货单成功！');
+                } else {
+                    this.messageService.create('error', resp['resultMessage']);
+                }
+            });
+        }
+    }
+
+    /**
+     * 编辑表单-取消
+     */
+    editFormHandleCancel(): void {
+        this.sellOrderEdit.clearProductField();
+        this.editModel.isVisible = false;
+    }
+
+    /**
+     * 删除订单
+     * @param order
+     */
+    delStockOrder(order): void {
+        this.table.operationOrder = order;
+        this.confirmModel.orderNumber = order['orderNumber'];
+        this.confirmModel.isVisible = true;
+    }
+
+    /**
+     * 删除订单-取消
+     */
+    confirmHandleCancel(): void {
+        this.confirmModel.isVisible = false;
+    }
+
+    /**
+     * 删除订单-确认
+     */
+    confirmHandleOk(): void {
+        this.confirmModel.isVisible = false;
+
+        let orderId = this.table.operationOrder.id;
+        this.isSpinning = true;
+        this.sellOrderService.deleteStockOrder(orderId).pipe(
+            finalize(() => {
+                this.isSpinning = false;
+            })
+        ).subscribe(resp => {
+            if ('0000' == resp['resultCode']) {
+                this.messageService.create('info', '删除进货单成功！');
+                this.searchData(true);
+            } else {
+                this.messageService.create('error', resp['resultMessage']);
+            }
+        });
+    }
 }
 
-@Pipe({name: 'productType'})
-export class ProductTypePipe implements PipeTransform {
+@Pipe({name: 'sellOrderStatusType'})
+export class SellOrderStatusPipe implements PipeTransform {
     transform(value: string): string {
-        let params = {PESTICIDE: '农药', MANURE: '化肥'};
+        let params = {UNPAY: '未支付', HASPAY: '已支付'};
         return params[value];
     }
 }

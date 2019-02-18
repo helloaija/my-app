@@ -3,7 +3,8 @@ import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {SellOrderService} from './sellOrder.service';
-import {ProductTypePipe, SellOrderComponent} from './sellOrder.component';
+import {SellOrderEditComponent} from "./sellOrder-edit.component";
+import {SellOrderComponent, SellOrderStatusPipe} from "./sellOrder.component";
 
 @NgModule({
     imports: [
@@ -11,9 +12,10 @@ import {ProductTypePipe, SellOrderComponent} from './sellOrder.component';
         FormsModule,
         ReactiveFormsModule,
         NgZorroAntdModule
+
     ],
     declarations: [
-        SellOrderComponent, ProductTypePipe
+        SellOrderComponent, SellOrderEditComponent, SellOrderStatusPipe
     ],
     exports: [SellOrderComponent],
     providers: [SellOrderService]

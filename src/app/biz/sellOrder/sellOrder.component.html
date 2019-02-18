@@ -1,1 +1,111 @@
-sellOrder
+<nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
+    <form nz-form [formGroup]="queryForm" nzLayout="inline" class="ant-advanced-search-form">
+        <nz-form-item style="margin: auto;">
+            <nz-form-label nzFor="orderNumber">订单编号</nz-form-label>
+            <nz-form-control>
+                <input nz-input placeholder="订单编号" formControlName="orderNumber">
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item style="margin: auto;">
+            <nz-form-label nzFor="orderStatus">订单状态</nz-form-label>
+            <nz-form-control>
+                <nz-select style="width: 165px;" formControlName="orderStatus" [nzAllowClear]="true">
+                    <nz-option *ngFor="let option of orderStatusOfOption" [nzLabel]="option.name"
+                               [nzValue]="option.value"></nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+
+        <br/>
+
+        <nz-form-item style="margin: auto;">
+            <nz-form-label nzFor="createTimeBegin">创建开始时间</nz-form-label>
+            <nz-form-control>
+                <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="创建开始时间"
+                                formControlName="createTimeBegin" [nzStyle]="{width: '165px'}"></nz-date-picker>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item style="margin: auto;">
+            <nz-form-label nzFor="createTimeEnd">创建结束时间</nz-form-label>
+            <nz-form-control>
+                <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="创建结束时间"
+                                formControlName="createTimeEnd" [nzStyle]="{width: '165px'}"></nz-date-picker>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item style="margin: auto;">
+            <div class="queryFormBtn">
+                <button nz-button (click)="query()">查询</button>
+                <button nz-button (click)="resetForm()">清除</button>
+                <button nz-button (click)="showAddForm()">添加</button>
+            </div>
+        </nz-form-item>
+    </form>
+
+    <nz-table #nzTable [nzData]="table.dataSet" [nzPageSize]="10"
+              nzBordered="true"
+              nzShowSizeChanger
+              [nzFrontPagination]="false"
+              [nzLoading]="table.loading"
+              [nzTotal]="table.total"
+              [(nzPageIndex)]="table.pageIndex"
+              [(nzPageSize)]="table.pageSize"
+              (nzPageIndexChange)="searchData()"
+              (nzPageSizeChange)="searchData(true)">
+        <thead>
+        <tr>
+            <th nzShowExpand></th>
+            <th nzWidth="45px">序号</th>
+            <th nzWidth="130px">订单编号</th>
+            <th nzWidth="100px">订单价格</th>
+            <th nzWidth="100px">调整价格</th>
+            <th nzWidth="100px">已支付金额</th>
+            <th nzWidth="100px">订单状态</th>
+            <th nzWidth="150px">供应商名称</th>
+            <th nzWidth="160px">结束时间</th>
+            <th nzWidth="170px">创建时间</th>
+            <th nzWidth="200px">备注</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-template ngFor let-data let-i="index" [ngForOf]="nzTable.data">
+            <tr>
+                <td nzShowExpand [(nzExpand)]="data.expand"></td>
+                <td>{{i + 1}}</td>
+                <td>{{data.orderNumber}}</td>
+                <td class="text-right">{{data.orderAmount | currency:'￥'}}</td>
+                <td class="text-right">{{data.modifyAmount | currency:'￥'}}</td>
+                <td class="text-right">{{data.hasPayAmount | currency:'￥'}}</td>
+                <td>{{data.orderStatus | sellOrderStatusType}}</td>
+                <td>{{data.supplierName}}</td>
+                <td class="text-center">{{data.finishTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                <td>{{data.remark}}</td>
+                <td><a href="javascript:void(0);" (click)="showUpdateForm(data)">修改</a>
+                    <nz-divider nzType="vertical"></nz-divider>
+                    <a href="javascript:void(0);" (click)="delStockOrder(data)">删除</a></td>
+            </tr>
+            <tr [nzExpand]="data.expand" *ngFor="let product of data.stockProductList; index as pi">
+                <td class="exp-emp" colspan="2" style="border-right: none;"></td>
+                <td class="exp-noemp" colspan="1" style="border-right: none;">({{pi + 1}})&nbsp;&nbsp;{{product.productTitle}}</td>
+                <td class="exp-noemp text-right" colspan="2" style="border-right: none;">单价：{{product.price | currency:'￥'}}</td>
+                <td class="exp-noemp text-right" colspan="2" style="border-right: none;">数量：{{product.number}}</td>
+                <td class="exp-emp" colspan="5"></td>
+            </tr>
+        </ng-template>
+        </tbody>
+    </nz-table>
+
+    <!--添加表单-->
+    <nz-modal [(nzVisible)]="editModel.isVisible" [nzTitle]="editModel.title" nzKeyboard="false" nzMaskClosable="false"
+              (nzOnCancel)="editFormHandleCancel()" (nzOnOk)="editFormHandleOk()" [nzOkLoading]="editModel.isOkLoading"
+              nzWidth="865px">
+        <view-sell-order-edit #sellEditComponent></view-sell-order-edit>
+    </nz-modal>
+</nz-spin>
+
+<nz-modal [(nzVisible)]="confirmModel.isVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">
+    <p>确认删除订单[{{confirmModel.orderNumber}}]？</p>
+</nz-modal>

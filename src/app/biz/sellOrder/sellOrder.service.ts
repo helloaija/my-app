@@ -5,26 +5,36 @@ import {Observable} from 'rxjs';
 
 @Injectable()
 export class SellOrderService {
+    listStockOrderUrl = "/admin/stockOrder/listStockOrderPage";
+    getStockOrderUrl = '/admin/stockOrder/getStockOrderInfo';
+    addStockOrderUrl = '/admin/stockOrder/addStockOrder';
+    updateStockOrderUrl = '/admin/stockOrder/updateStockOrder';
+    deleteStockOrderUrl = '/admin/stockOrder/deleteStockOrder';
     listProductUrl = "/admin/product/listProductPage";
-    saveProductUrl = '/admin/product/saveProductInfo';
-    delProductUrl = '/admin/product/delProductInfo';
-    getProductUrl = '/admin/product/getProductInfo';
+
+    getStockOrders(params): Observable<Object> {
+        return this.http.get(`${this.listStockOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    }
+
+    getStockOrder(stockId): Observable<Object> {
+        return this.http.get(`${this.getStockOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {stockId: stockId}});
+    }
+
+    addStockOrder(params): Observable<Object> {
+        return this.http.post(`${this.addStockOrderUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    }
+
+    deleteStockOrder(orderId): Observable<Object> {
+        return this.http.post(`${this.deleteStockOrderUrl}`, null,
+            {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {stockId: orderId}});
+    }
+
+    updateStockOrder(params): Observable<Object> {
+        return this.http.post(`${this.updateStockOrderUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    }
 
     getProducts(params): Observable<Object> {
         return this.http.get(`${this.listProductUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
-    }
-
-    saveProduct(params): Observable<Object> {
-        return this.http.post(`${this.saveProductUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
-    }
-
-    delProduct(productId): Observable<Object> {
-        return this.http.post(`${this.delProductUrl}`, null,
-            {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {productId: productId}});
-    }
-
-    getProduct(productId): Observable<Object> {
-        return this.http.get(`${this.getProductUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {productId: productId}});
     }
 
     constructor(private http: HttpClient) {
