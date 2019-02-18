@@ -62,7 +62,7 @@
             <th nzWidth="100px">调整价格</th>
             <th nzWidth="100px">已支付金额</th>
             <th nzWidth="100px">订单状态</th>
-            <th nzWidth="150px">供应商名称</th>
+            <th nzWidth="150px">买家名称</th>
             <th nzWidth="160px">结束时间</th>
             <th nzWidth="170px">创建时间</th>
             <th nzWidth="200px">备注</th>
@@ -79,15 +79,15 @@
                 <td class="text-right">{{data.modifyAmount | currency:'￥'}}</td>
                 <td class="text-right">{{data.hasPayAmount | currency:'￥'}}</td>
                 <td>{{data.orderStatus | sellOrderStatusType}}</td>
-                <td>{{data.supplierName}}</td>
+                <td>{{data.buyerName}}</td>
                 <td class="text-center">{{data.finishTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
                 <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
                 <td>{{data.remark}}</td>
                 <td><a href="javascript:void(0);" (click)="showUpdateForm(data)">修改</a>
                     <nz-divider nzType="vertical"></nz-divider>
-                    <a href="javascript:void(0);" (click)="delStockOrder(data)">删除</a></td>
+                    <a href="javascript:void(0);" (click)="delSellOrder(data)">删除</a></td>
             </tr>
-            <tr [nzExpand]="data.expand" *ngFor="let product of data.stockProductList; index as pi">
+            <tr [nzExpand]="data.expand" *ngFor="let product of data.sellProductList; index as pi">
                 <td class="exp-emp" colspan="2" style="border-right: none;"></td>
                 <td class="exp-noemp" colspan="1" style="border-right: none;">({{pi + 1}})&nbsp;&nbsp;{{product.productTitle}}</td>
                 <td class="exp-noemp text-right" colspan="2" style="border-right: none;">单价：{{product.price | currency:'￥'}}</td>
