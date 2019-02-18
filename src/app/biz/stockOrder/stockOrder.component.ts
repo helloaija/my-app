@@ -23,7 +23,8 @@ export class StockOrderComponent implements OnInit {
         pageSize: 10,
         total: 1,
         dataSet: [],
-        loading: true
+        loading: true,
+        operationOrder: null
     };
 
     // 遮罩
@@ -33,6 +34,11 @@ export class StockOrderComponent implements OnInit {
         isVisible: false,
         title: '',
         isOkLoading: false
+    };
+
+    confirmModel = {
+        isVisible: false,
+        orderNumber: ''
     };
 
     @ViewChild('stockEditComponent')
@@ -133,23 +139,46 @@ export class StockOrderComponent implements OnInit {
      * 编辑表单-确认
      */
     editFormHandleOk(): void {
+        if (!this.stockOrderEdit.validForm()) {
+            return;
+        }
+
         let params = this.stockOrderEdit.getValues();
         console.log(params);
 
-        this.editModel.isOkLoading = true;
-        this.stockOrderService.addStockOrder(params).pipe(
-            finalize(() => {
-                this.editModel.isOkLoading = false;
-                // this.editModel.isVisible = false;
-            })
-        ).subscribe(resp => {
-            if ('0000' == resp['resultCode']) {
-                this.searchData(true);
-                this.messageService.create('info', '新增进货单成功！');
-            } else {
-                this.messageService.create('error', resp['resultMessage']);
-            }
-        });
+        if (params['id']) {
+            // 更新
+            this.editModel.isOkLoading = true;
+            this.stockOrderService.updateStockOrder(params).pipe(
+                finalize(() => {
+                    this.editModel.isOkLoading = false;
+                })
+            ).subscribe(resp => {
+                if ('0000' == resp['resultCode']) {
+                    this.editFormHandleCancel();
+                    this.searchData(true);
+                    this.messageService.create('info', '更新进货单成功！');
+                } else {
+                    this.messageService.create('error', resp['resultMessage']);
+                }
+            });
+        } else {
+            // 新增
+            this.editModel.isOkLoading = true;
+            this.stockOrderService.addStockOrder(params).pipe(
+                finalize(() => {
+                    this.editModel.isOkLoading = false;
+                })
+            ).subscribe(resp => {
+                if ('0000' == resp['resultCode']) {
+                    this.editFormHandleCancel();
+                    this.searchData(true);
+                    this.messageService.create('info', '新增进货单成功！');
+                } else {
+                    this.messageService.create('error', resp['resultMessage']);
+                }
+            });
+        }
     }
 
     /**
@@ -158,6 +187,45 @@ export class StockOrderComponent implements OnInit {
     editFormHandleCancel(): void {
         this.stockOrderEdit.clearProductField();
         this.editModel.isVisible = false;
+    }
+
+    /**
+     * 删除订单
+     * @param order
+     */
+    delStockOrder(order): void {
+        this.table.operationOrder = order;
+        this.confirmModel.orderNumber = order['orderNumber'];
+        this.confirmModel.isVisible = true;
+    }
+
+    /**
+     * 删除订单-取消
+     */
+    confirmHandleCancel(): void {
+        this.confirmModel.isVisible = false;
+    }
+
+    /**
+     * 删除订单-确认
+     */
+    confirmHandleOk(): void {
+        this.confirmModel.isVisible = false;
+
+        let orderId = this.table.operationOrder.id;
+        this.isSpinning = true;
+        this.stockOrderService.deleteStockOrder(orderId).pipe(
+            finalize(() => {
+                this.isSpinning = false;
+            })
+        ).subscribe(resp => {
+            if ('0000' == resp['resultCode']) {
+                this.messageService.create('info', '删除进货单成功！');
+                this.searchData(true);
+            } else {
+                this.messageService.create('error', resp['resultMessage']);
+            }
+        });
     }
 }
 

@@ -62,7 +62,7 @@ import {StockOrderService} from './stockOrder.service';
                 </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-                <nz-form-label nzFor="payTime" nzRequired>支付时间</nz-form-label>
+                <nz-form-label nzFor="payTime">支付时间</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
                         <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="请输入支付时间"
@@ -74,7 +74,7 @@ import {StockOrderService} from './stockOrder.service';
                 </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-                <nz-form-label nzFor="finishTime" nzRequired>完成时间</nz-form-label>
+                <nz-form-label nzFor="finishTime">完成时间</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
                         <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="请输入完成时间"
@@ -104,7 +104,8 @@ import {StockOrderService} from './stockOrder.service';
                     <nz-input-group>
                         <input nz-input formControlName="supplierPhone" placeholder="请输入供应商电话">
                     </nz-input-group>
-                    <nz-form-explain *ngIf="editForm.get('supplierPhone').dirty && editForm.get('supplierPhone').errors">
+                    <nz-form-explain
+                            *ngIf="editForm.get('supplierPhone').dirty && editForm.get('supplierPhone').errors">
                         请输入供应商电话！
                     </nz-form-explain>
                 </nz-form-control>
@@ -115,7 +116,8 @@ import {StockOrderService} from './stockOrder.service';
                 <nz-form-label nzFor="supplierAddress">供应商地址</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <textarea nz-input formControlName="supplierAddress" placeholder="请输入供应商地址" style="width: 647px;"
+                        <textarea nz-input formControlName="supplierAddress" placeholder="请输入供应商地址"
+                                  style="width: 647px;"
                                   [nzAutosize]="{minRows: 4, maxRows: 4}"></textarea>
                     </nz-input-group>
                 </nz-form-control>
@@ -127,7 +129,8 @@ import {StockOrderService} from './stockOrder.service';
                 <nz-form-label nzFor="supplierMessage">供应商信息</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <textarea nz-input formControlName="supplierMessage" placeholder="请输入供应商信息" style="width: 647px;"
+                        <textarea nz-input formControlName="supplierMessage" placeholder="请输入供应商信息"
+                                  style="width: 647px;"
                                   [nzAutosize]="{minRows: 4, maxRows: 4}"></textarea>
                     </nz-input-group>
                 </nz-form-control>
@@ -159,11 +162,15 @@ import {StockOrderService} from './stockOrder.service';
                 <input nz-input [formControlName]="control.titleControl" type="hidden">
 
                 <nz-form-item>
-                    <nz-form-label [nzFor]="control.productIdControl">产品</nz-form-label>
+                    <nz-form-label [nzFor]="control.productIdControl" nzRequired>产品</nz-form-label>
                     <nz-form-control>
-                        <nz-select [formControlName]="control.productIdControl" (nzScrollToBottom)="loadMore(control, false)"
+                        <nz-select [formControlName]="control.productIdControl"
+                                   (nzScrollToBottom)="loadMore(control, false)"
                                    (nzOnSearch)="searchProduct(control, $event)"
-                                   nzPlaceHolder="请选择产品" nzAllowClear nzShowSearch nzServerSearch="true" style="width: 160px;">
+                                   (nzOpenChange)="productOpenChange(control, $event)"
+                                   (ngModelChange)="productSelectChange(control, $event)"
+                                   nzPlaceHolder="请选择产品" nzAllowClear nzShowSearch nzServerSearch="true"
+                                   style="width: 160px;">
                             <nz-option *ngFor="let product of control.selectData.optionList" [nzValue]="product.id"
                                        [nzLabel]="product.title"></nz-option>
                             <nz-option *ngIf="control.selectData.isLoading" nzDisabled nzCustomContent>
@@ -178,7 +185,7 @@ import {StockOrderService} from './stockOrder.service';
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                    <nz-form-label [nzFor]="control.priceControl">单价</nz-form-label>
+                    <nz-form-label [nzFor]="control.priceControl" nzRequired>单价</nz-form-label>
                     <nz-form-control>
                         <input nz-input placeholder="请填写单价" [attr.id]="control.index"
                                [formControlName]="control.priceControl">
@@ -189,11 +196,12 @@ import {StockOrderService} from './stockOrder.service';
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                    <nz-form-label [nzFor]="control.numberControl">数量</nz-form-label>
+                    <nz-form-label [nzFor]="control.numberControl" nzRequired>数量</nz-form-label>
                     <nz-form-control>
                         <input nz-input placeholder="请填写数量" [attr.id]="control.index"
                                [formControlName]="control.numberControl" style="width: 100px;">
-                        <i nz-icon type="minus-circle-o" class="dynamic-delete-button" (click)="removeProductField(control, $event)"
+                        <i nz-icon type="minus-circle-o" class="dynamic-delete-button"
+                           (click)="removeProductField(control, $event)"
                            style="margin-left: 15px;"></i>
                         <nz-form-explain
                                 *ngIf="editForm.get(control.numberControl).dirty && editForm.get(control.numberControl).errors">
@@ -225,12 +233,12 @@ export class StockOrderEditComponent implements OnInit {
             modifyAmount: ['', [Validators.required]],
             hasPayAmount: ['', [Validators.required]],
             orderStatus: ['', [Validators.required]],
-            payTime: ['', [Validators.required]],
-            finishTime: ['', [Validators.required]],
-            supplierName: ['', [Validators.required]],
-            supplierPhone: ['', [Validators.required]],
-            supplierAddress: ['', [Validators.required]],
-            supplierMessage: ['', [Validators.required]],
+            payTime: ['', []],
+            finishTime: ['', []],
+            supplierName: ['', []],
+            supplierPhone: ['', []],
+            supplierAddress: ['', []],
+            supplierMessage: ['', []],
             remark: ['', []]
         });
     }
@@ -257,8 +265,13 @@ export class StockOrderEditComponent implements OnInit {
      */
     public getValues(): any {
         let formValue = this.commonUtils.nullTrim(this.editForm.value);
-        formValue['finishTime'] = formatDate(formValue['finishTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        formValue['payTime'] = formatDate(formValue['payTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        if (formValue['finishTime']) {
+            formValue['finishTime'] = formatDate(formValue['finishTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (formValue['payTime']) {
+            formValue['payTime'] = formatDate(formValue['payTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+
         let params = {};
 
         Object.keys(formValue).forEach(function (key) {
@@ -303,8 +316,8 @@ export class StockOrderEditComponent implements OnInit {
                 `stockProductList[${i}]_price`, `stockProductList[${i}]_number`, {});
             this.productArray.push(control);
             this.addProductControl(control, productList[i]);
-            this.searchProduct(control, productList[i]['productTitle']);
-            // this.loadMore(control, true, productList[i]['productTitle']);
+            // this.searchProduct(control, productList[i]['productTitle']);
+            this.loadMore(control, true, {productId: productList[i]['productId']});
             // console.log(this.el.nativeElement.querySelector('.btn1'));
         }
     }
@@ -384,8 +397,7 @@ export class StockOrderEditComponent implements OnInit {
      * @param control
      * @param searchStr 搜索文字
      */
-    loadMore(control: any, reload: boolean = false, searchStr?: string): void {
-        console.log(searchStr);
+    loadMore(control: any, reload: boolean = false, filterParams?: object): void {
 
         if (reload) {
             // 重新加载
@@ -399,7 +411,12 @@ export class StockOrderEditComponent implements OnInit {
             }
         }
 
-        let params = {title: searchStr ? searchStr : '', currentPage: control.selectData['pageIndex']};
+        let params = {currentPage: control.selectData['pageIndex']};
+
+        if (filterParams) {
+            params['title'] = filterParams['productTitle'] ? filterParams['productTitle'] : '';
+            params['id'] = filterParams['productId'] ? filterParams['productId'] : '';
+        }
 
         control.selectData['isLoading'] = true;
         this.stockOrderService.getProducts(params).subscribe(data => {
@@ -416,8 +433,56 @@ export class StockOrderEditComponent implements OnInit {
      * 选择产品下拉框-文字搜索
      * @param control
      */
-    searchProduct(control, e: EventEmitter<string>): void {
-        this.loadMore(control, true, String(e));
+    searchProduct(control: StockProduct, e: EventEmitter<string>): void {
+        this.loadMore(control, true, {productTitle: String(e)});
+    }
+
+    /**
+     * 产品下拉菜单打开状态变化回调
+     * @param control
+     * @param e
+     */
+    productOpenChange(control: StockProduct, e: EventEmitter<boolean>): void {
+        if (e) {
+            // 当展开时，判断是否需要重新加载下拉选项
+            if (!control.selectData['isInit']) {
+                control.selectData['isInit'] = true;
+                this.loadMore(control, true);
+            }
+        }
+    }
+
+    /**
+     * 产品选项改变触发
+     * @param e
+     */
+    productSelectChange(control: StockProduct, e: EventEmitter<any[]>): void {
+
+        if (!control.selectData) {
+            return;
+        }
+        if (!control.selectData.optionList) {
+            return;
+        }
+        if (control.selectData.optionList.length == 0) {
+            return;
+        }
+
+        let selectedProduct = null;
+        for (let i = 0; i < control.selectData.optionList.length; i++) {
+            if (control.selectData.optionList[i].id == String(e)) {
+                selectedProduct = control.selectData.optionList[i];
+                break;
+            }
+        }
+
+        if (selectedProduct == null) {
+            return;
+        }
+
+        console.log('productSelectChange', selectedProduct);
+        this.editForm.controls[control.titleControl].setValue(selectedProduct['title']);
+        this.editForm.controls[control.priceControl].setValue(selectedProduct['price']);
     }
 }
 

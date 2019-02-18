@@ -89,9 +89,9 @@
             </tr>
             <tr [nzExpand]="data.expand" *ngFor="let product of data.stockProductList; index as pi">
                 <td class="exp-emp" colspan="2" style="border-right: none;"></td>
-                <td class="exp-noemp" colspan="1" style="border-right: none;">({{pi + 1}})&nbsp;&nbsp;&nbsp;{{product.productTitle}}</td>
+                <td class="exp-noemp" colspan="1" style="border-right: none;">({{pi + 1}})&nbsp;&nbsp;{{product.productTitle}}</td>
                 <td class="exp-noemp text-right" colspan="2" style="border-right: none;">单价：{{product.price | currency:'￥'}}</td>
-                <td class="exp-noemp text-right" colspan="2" style="border-right: none;">数量:{{product.number}}</td>
+                <td class="exp-noemp text-right" colspan="2" style="border-right: none;">数量：{{product.number}}</td>
                 <td class="exp-emp" colspan="5"></td>
             </tr>
         </ng-template>
@@ -105,3 +105,7 @@
         <view-stock-order-edit #stockEditComponent></view-stock-order-edit>
     </nz-modal>
 </nz-spin>
+
+<nz-modal [(nzVisible)]="confirmModel.isVisible" nzTitle="提示" (nzOnCancel)="confirmHandleCancel()" (nzOnOk)="confirmHandleOk()">
+    <p>确认删除订单[{{confirmModel.orderNumber}}]？</p>
+</nz-modal>
