@@ -5,32 +5,32 @@ import {Observable} from 'rxjs';
 
 @Injectable()
 export class SellOrderService {
-    listStockOrderUrl = "/admin/stockOrder/listStockOrderPage";
-    getStockOrderUrl = '/admin/stockOrder/getStockOrderInfo';
-    addStockOrderUrl = '/admin/stockOrder/addStockOrder';
-    updateStockOrderUrl = '/admin/stockOrder/updateStockOrder';
-    deleteStockOrderUrl = '/admin/stockOrder/deleteStockOrder';
+    listSellOrderUrl = "/admin/sellOrder/listSellOrderPage";
+    getSellOrderUrl = '/admin/sellOrder/getSellOrderInfo';
+    addSellOrderUrl = '/admin/sellOrder/addSellOrder';
+    updateSellOrderUrl = '/admin/sellOrder/updateSellOrder';
+    deleteSellOrderUrl = '/admin/sellOrder/deleteSellOrder';
     listProductUrl = "/admin/product/listProductPage";
 
-    getStockOrders(params): Observable<Object> {
-        return this.http.get(`${this.listStockOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    getSellOrders(params): Observable<Object> {
+        return this.http.get(`${this.listSellOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
-    getStockOrder(stockId): Observable<Object> {
-        return this.http.get(`${this.getStockOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {stockId: stockId}});
+    getSellOrder(sellId): Observable<Object> {
+        return this.http.get(`${this.getSellOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {sellId: sellId}});
     }
 
-    addStockOrder(params): Observable<Object> {
-        return this.http.post(`${this.addStockOrderUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    addSellOrder(params): Observable<Object> {
+        return this.http.post(`${this.addSellOrderUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
-    deleteStockOrder(orderId): Observable<Object> {
-        return this.http.post(`${this.deleteStockOrderUrl}`, null,
-            {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {stockId: orderId}});
+    deleteSellOrder(orderId): Observable<Object> {
+        return this.http.post(`${this.deleteSellOrderUrl}`, null,
+            {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : {sellId: orderId}});
     }
 
-    updateStockOrder(params): Observable<Object> {
-        return this.http.post(`${this.updateStockOrderUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    updateSellOrder(params): Observable<Object> {
+        return this.http.post(`${this.updateSellOrderUrl}`, null, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
     getProducts(params): Observable<Object> {

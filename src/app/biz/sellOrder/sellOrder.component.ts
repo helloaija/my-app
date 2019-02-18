@@ -94,7 +94,7 @@ export class SellOrderComponent implements OnInit {
 
         this.table.loading = true;
         // 请求订单数据
-        this.sellOrderService.getStockOrders(this.table.filterParams).pipe(
+        this.sellOrderService.getSellOrders(this.table.filterParams).pipe(
             finalize(() => {
                 this.table.loading = false;
             })
@@ -124,7 +124,7 @@ export class SellOrderComponent implements OnInit {
         this.editModel.title = `编辑进货单[${data['orderNumber']}]`;
 
         this.isSpinning = true;
-        this.sellOrderService.getStockOrder(data.id).pipe(
+        this.sellOrderService.getSellOrder(data.id).pipe(
             finalize(() => {
                 this.isSpinning = false;
             })
@@ -153,7 +153,7 @@ export class SellOrderComponent implements OnInit {
         if (params['id']) {
             // 更新
             this.editModel.isOkLoading = true;
-            this.sellOrderService.updateStockOrder(params).pipe(
+            this.sellOrderService.updateSellOrder(params).pipe(
                 finalize(() => {
                     this.editModel.isOkLoading = false;
                 })
@@ -169,7 +169,7 @@ export class SellOrderComponent implements OnInit {
         } else {
             // 新增
             this.editModel.isOkLoading = true;
-            this.sellOrderService.addStockOrder(params).pipe(
+            this.sellOrderService.addSellOrder(params).pipe(
                 finalize(() => {
                     this.editModel.isOkLoading = false;
                 })
@@ -218,7 +218,7 @@ export class SellOrderComponent implements OnInit {
 
         let orderId = this.table.operationOrder.id;
         this.isSpinning = true;
-        this.sellOrderService.deleteStockOrder(orderId).pipe(
+        this.sellOrderService.deleteSellOrder(orderId).pipe(
             finalize(() => {
                 this.isSpinning = false;
             })
