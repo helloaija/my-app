@@ -24,6 +24,7 @@ export class ProductComponent implements OnInit {
     total = 1;
     dataSet = [];
     loading = true;
+    filterParams = {};
 
     // 添加表单窗口
     isAddFormVisible = false;
@@ -53,7 +54,17 @@ export class ProductComponent implements OnInit {
 
     // 查询按钮
     query(): void {
-        this.searchData();
+        let params = this.queryForm.value;
+        if (params['createTimeBegin']) {
+            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (params['createTimeEnd']) {
+            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+
+        this.filterParams = params;
+
+        this.searchData(true);
     }
 
     // 重置查询表单
@@ -80,19 +91,10 @@ export class ProductComponent implements OnInit {
         }
 
         this.loading = true;
-
-        let params = this.queryForm.value;
-        params['currentPage'] = this.pageIndex;
-        params['pageSize'] = this.pageSize;
-        if (params['createTimeBegin']) {
-            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
-        if (params['createTimeEnd']) {
-            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
-
+        this.filterParams['currentPage'] = this.pageIndex;
+        this.filterParams['pageSize'] = this.pageSize;
         // 请求产品数据
-        this.productService.getProducts(this.commonUtils.nullTrim(params)).pipe(
+        this.productService.getProducts(this.commonUtils.nullTrim(this.filterParams)).pipe(
             finalize(() => {
                 this.loading = false;
             })
@@ -198,7 +200,7 @@ export class ProductComponent implements OnInit {
      * 确认对话框-确认
      */
     confirmHandleOk(): void {
-        this.isConfirmVisible = false;
+        this.isConfirmVisible    = false;
 
         this.productService.delProduct(this.currentOptProduct['id']).subscribe(data => {
             if ('0000' == data['resultCode']) {

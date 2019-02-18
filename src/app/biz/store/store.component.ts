@@ -21,7 +21,8 @@ export class StoreComponent implements OnInit {
         pageSize: 10,
         total: 1,
         dataSet: [],
-        loading: true
+        loading: true,
+        filterParams: {}
     };
 
     // 遮罩
@@ -38,7 +39,15 @@ export class StoreComponent implements OnInit {
 
     // 查询按钮
     query(): void {
-        this.searchData();
+        let params = this.queryForm.value;
+        if (params['createTimeBegin']) {
+            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (params['createTimeEnd']) {
+            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        this.table.filterParams = params;
+        this.searchData(true);
     }
 
     // 重置查询表单
@@ -59,18 +68,11 @@ export class StoreComponent implements OnInit {
 
         this.table.loading = true;
 
-        let params = this.queryForm.value;
-        params['currentPage'] = this.table.pageIndex;
-        params['pageSize'] = this.table.pageSize;
-        if (params['createTimeBegin']) {
-            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
-        if (params['createTimeEnd']) {
-            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
+        this.table.filterParams['currentPage'] = this.table.pageIndex;
+        this.table.filterParams['pageSize'] = this.table.pageSize;
 
         // 请求产品数据
-        this.storeService.getProducts(this.commonUtils.nullTrim(params)).pipe(
+        this.storeService.getProducts(this.commonUtils.nullTrim(this.table.filterParams)).pipe(
             finalize(() => {
                 this.table.loading = false;
             })

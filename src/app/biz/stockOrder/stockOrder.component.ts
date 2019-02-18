@@ -24,7 +24,8 @@ export class StockOrderComponent implements OnInit {
         total: 1,
         dataSet: [],
         loading: true,
-        operationOrder: null
+        operationOrder: null,
+        filterParams: {}
     };
 
     // 遮罩
@@ -58,6 +59,17 @@ export class StockOrderComponent implements OnInit {
 
     // 查询按钮
     query(): void {
+        let params = this.queryForm.value;
+
+        if (params['createTimeBegin']) {
+            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (params['createTimeEnd']) {
+            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+
+        this.table.filterParams = this.commonUtils.nullTrim(params);
+
         this.searchData(true);
     }
 
@@ -77,20 +89,12 @@ export class StockOrderComponent implements OnInit {
             this.table.pageIndex = 1;
         }
 
+        this.table.filterParams['currentPage'] = this.table.pageIndex;
+        this.table.filterParams['pageSize'] = this.table.pageSize;
+
         this.table.loading = true;
-
-        let params = this.queryForm.value;
-        params['currentPage'] = this.table.pageIndex;
-        params['pageSize'] = this.table.pageSize;
-        if (params['createTimeBegin']) {
-            params['createTimeBegin'] = formatDate(params['createTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
-        if (params['createTimeEnd']) {
-            params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
-        }
-
         // 请求订单数据
-        this.stockOrderService.getStockOrders(this.commonUtils.nullTrim(params)).pipe(
+        this.stockOrderService.getStockOrders(this.table.filterParams).pipe(
             finalize(() => {
                 this.table.loading = false;
             })
