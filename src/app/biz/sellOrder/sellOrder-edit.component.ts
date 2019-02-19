@@ -88,35 +88,35 @@ import {SellOrderService} from './sellOrder.service';
             <br/>
 
             <nz-form-item>
-                <nz-form-label nzFor="supplierName">供应商名称</nz-form-label>
+                <nz-form-label nzFor="buyerName">买家名称</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <input nz-input formControlName="supplierName" placeholder="请输入供应商名称">
+                        <input nz-input formControlName="buyerName" placeholder="请输入买家名称">
                     </nz-input-group>
-                    <nz-form-explain *ngIf="editForm.get('supplierName').dirty && editForm.get('supplierName').errors">
-                        请输入供应商名称！
+                    <nz-form-explain *ngIf="editForm.get('buyerName').dirty && editForm.get('buyerName').errors">
+                        请输入买家名称！
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-                <nz-form-label nzFor="supplierPhone">供应商电话</nz-form-label>
+                <nz-form-label nzFor="buyerPhone">买家电话</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <input nz-input formControlName="supplierPhone" placeholder="请输入供应商电话">
+                        <input nz-input formControlName="buyerPhone" placeholder="请输入买家电话">
                     </nz-input-group>
                     <nz-form-explain
-                            *ngIf="editForm.get('supplierPhone').dirty && editForm.get('supplierPhone').errors">
-                        请输入供应商电话！
+                            *ngIf="editForm.get('buyerPhone').dirty && editForm.get('buyerPhone').errors">
+                        请输入买家电话！
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
             <br/>
 
             <nz-form-item>
-                <nz-form-label nzFor="supplierAddress">供应商地址</nz-form-label>
+                <nz-form-label nzFor="buyerAddress">买家地址</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <textarea nz-input formControlName="supplierAddress" placeholder="请输入供应商地址"
+                        <textarea nz-input formControlName="buyerAddress" placeholder="请输入买家地址"
                                   style="width: 647px;"
                                   [nzAutosize]="{minRows: 4, maxRows: 4}"></textarea>
                     </nz-input-group>
@@ -126,10 +126,10 @@ import {SellOrderService} from './sellOrder.service';
             <br/>
 
             <nz-form-item>
-                <nz-form-label nzFor="supplierMessage">供应商信息</nz-form-label>
+                <nz-form-label nzFor="buyerMessage">买家信息</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <textarea nz-input formControlName="supplierMessage" placeholder="请输入供应商信息"
+                        <textarea nz-input formControlName="buyerMessage" placeholder="请输入买家信息"
                                   style="width: 647px;"
                                   [nzAutosize]="{minRows: 4, maxRows: 4}"></textarea>
                     </nz-input-group>
@@ -152,7 +152,7 @@ import {SellOrderService} from './sellOrder.service';
 
             <div style="height: 30px;background: aliceblue; line-height: 30px;">
                 <label style="margin-left: 10px;
-                          font-weight: bold;">进货产品信息</label>
+                          font-weight: bold;">销售产品信息</label>
                 <button nz-button nzSize="small" (click)="addProductField()"
                         style="float: right; right: 10px; top: 3px;">增加产品
                 </button>
@@ -224,7 +224,7 @@ export class SellOrderEditComponent implements OnInit {
 
     orderStatusOfOption = [{name: '未支付', value: 'UNPAY'}, {name: '已支付', value: 'HASPAY'}];
 
-    productArray: Array<StockProduct> = [];
+    productArray: Array<SellProduct> = [];
 
     constructor(private fb: FormBuilder, private commonUtils: CommonUtils, private sellOrderService: SellOrderService, private el: ElementRef) {
         this.editForm = this.fb.group({
@@ -235,10 +235,10 @@ export class SellOrderEditComponent implements OnInit {
             orderStatus: ['', [Validators.required]],
             payTime: ['', []],
             finishTime: ['', []],
-            supplierName: ['', []],
-            supplierPhone: ['', []],
-            supplierAddress: ['', []],
-            supplierMessage: ['', []],
+            buyerName: ['', []],
+            buyerPhone: ['', []],
+            buyerAddress: ['', []],
+            buyerMessage: ['', []],
             remark: ['', []]
         });
     }
@@ -275,7 +275,7 @@ export class SellOrderEditComponent implements OnInit {
         let params = {};
 
         Object.keys(formValue).forEach(function (key) {
-            if (key.startsWith('stockProductList')) {
+            if (key.startsWith('sellProductList')) {
                 params[key.replace('_', '.')] = formValue[key];
             } else {
                 params[key] = formValue[key];
@@ -293,7 +293,7 @@ export class SellOrderEditComponent implements OnInit {
         // 重置表单
         this.editForm.reset();
         this.editForm.patchValue(params);
-        this.setProductValues(params['stockProductList']);
+        this.setProductValues(params['sellProductList']);
     }
 
     public resetEditForm(): void {
@@ -312,13 +312,11 @@ export class SellOrderEditComponent implements OnInit {
         }
 
         for (let i = 0; i < productList.length; i++) {
-            const control = new StockProduct(i, `stockProductList[${i}]_id`, `stockProductList[${i}]_productId`, `stockProductList[${i}]_productTitle`,
-                `stockProductList[${i}]_price`, `stockProductList[${i}]_number`, {});
+            const control = new SellProduct(i, `sellProductList[${i}]_id`, `sellProductList[${i}]_productId`, `sellProductList[${i}]_productTitle`,
+                `sellProductList[${i}]_price`, `sellProductList[${i}]_number`, {});
             this.productArray.push(control);
             this.addProductControl(control, productList[i]);
-            // this.searchProduct(control, productList[i]['productTitle']);
             this.loadMore(control, true, {productId: productList[i]['productId']});
-            // console.log(this.el.nativeElement.querySelector('.btn1'));
         }
     }
 
@@ -332,8 +330,8 @@ export class SellOrderEditComponent implements OnInit {
         }
         const idx = (this.productArray.length > 0) ? this.productArray[this.productArray.length - 1].index + 1 : 0;
 
-        const control = new StockProduct(idx, `stockProductList[${idx}]_id`, `stockProductList[${idx}]_productId`, `stockProductList[${idx}]_productTitle`,
-            `stockProductList[${idx}]_price`, `stockProductList[${idx}]_number`, {searchStr: '', optionList: []});
+        const control = new SellProduct(idx, `sellProductList[${idx}]_id`, `sellProductList[${idx}]_productId`, `sellProductList[${idx}]_productTitle`,
+            `sellProductList[${idx}]_price`, `sellProductList[${idx}]_number`, {searchStr: '', optionList: []});
 
         const index = this.productArray.push(control);
 
@@ -346,7 +344,7 @@ export class SellOrderEditComponent implements OnInit {
      * 添加到FormGroup中
      * @param control
      */
-    addProductControl(control: StockProduct,
+    addProductControl(control: SellProduct,
                       values?: { id: number, productId: number, title: string, price: number, number: number }): void {
         this.editForm.addControl(control.idControl, new FormControl(values ? values['id'] : ''));
         this.editForm.addControl(control.productIdControl, new FormControl(values ? values['productId'] : '', Validators.required));
@@ -360,7 +358,7 @@ export class SellOrderEditComponent implements OnInit {
      * @param i
      * @param e
      */
-    removeProductField(i: StockProduct, e?: MouseEvent): void {
+    removeProductField(i: SellProduct, e?: MouseEvent): void {
         if (e) {
             e.preventDefault();
         }
@@ -376,7 +374,7 @@ export class SellOrderEditComponent implements OnInit {
      * 移除出FormGroup
      * @param control
      */
-    removeProductControl(control: StockProduct): void {
+    removeProductControl(control: SellProduct): void {
         this.editForm.removeControl(control.idControl);
         this.editForm.removeControl(control.productIdControl);
         this.editForm.removeControl(control.titleControl);
@@ -433,7 +431,7 @@ export class SellOrderEditComponent implements OnInit {
      * 选择产品下拉框-文字搜索
      * @param control
      */
-    searchProduct(control: StockProduct, e: EventEmitter<string>): void {
+    searchProduct(control: SellProduct, e: EventEmitter<string>): void {
         this.loadMore(control, true, {productTitle: String(e)});
     }
 
@@ -442,7 +440,7 @@ export class SellOrderEditComponent implements OnInit {
      * @param control
      * @param e
      */
-    productOpenChange(control: StockProduct, e: EventEmitter<boolean>): void {
+    productOpenChange(control: SellProduct, e: EventEmitter<boolean>): void {
         if (e) {
             // 当展开时，判断是否需要重新加载下拉选项
             if (!control.selectData['isInit']) {
@@ -456,7 +454,7 @@ export class SellOrderEditComponent implements OnInit {
      * 产品选项改变触发
      * @param e
      */
-    productSelectChange(control: StockProduct, e: EventEmitter<any[]>): void {
+    productSelectChange(control: SellProduct, e: EventEmitter<any[]>): void {
 
         if (!control.selectData) {
             return;
@@ -486,7 +484,7 @@ export class SellOrderEditComponent implements OnInit {
     }
 }
 
-export class StockProduct {
+export class SellProduct {
     index: number;
     idControl: string;
     productIdControl: string;

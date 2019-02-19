@@ -112,7 +112,7 @@ export class SellOrderComponent implements OnInit {
      */
     showAddForm(): void {
         this.sellOrderEdit.resetEditForm();
-        this.editModel.title = `新增进货单`;
+        this.editModel.title = `新增销售单`;
         this.editModel.isVisible = true;
     }
 
@@ -121,7 +121,7 @@ export class SellOrderComponent implements OnInit {
      * @param data
      */
     showUpdateForm(data): void {
-        this.editModel.title = `编辑进货单[${data['orderNumber']}]`;
+        this.editModel.title = `编辑销售单[${data['orderNumber']}]`;
 
         this.isSpinning = true;
         this.sellOrderService.getSellOrder(data.id).pipe(
@@ -161,7 +161,7 @@ export class SellOrderComponent implements OnInit {
                 if ('0000' == resp['resultCode']) {
                     this.editFormHandleCancel();
                     this.searchData(true);
-                    this.messageService.create('info', '更新进货单成功！');
+                    this.messageService.create('info', '更新销售单成功！');
                 } else {
                     this.messageService.create('error', resp['resultMessage']);
                 }
@@ -177,7 +177,7 @@ export class SellOrderComponent implements OnInit {
                 if ('0000' == resp['resultCode']) {
                     this.editFormHandleCancel();
                     this.searchData(true);
-                    this.messageService.create('info', '新增进货单成功！');
+                    this.messageService.create('info', '新增销售单成功！');
                 } else {
                     this.messageService.create('error', resp['resultMessage']);
                 }
@@ -197,7 +197,7 @@ export class SellOrderComponent implements OnInit {
      * 删除订单
      * @param order
      */
-    delStockOrder(order): void {
+    delSellOrder(order): void {
         this.table.operationOrder = order;
         this.confirmModel.orderNumber = order['orderNumber'];
         this.confirmModel.isVisible = true;

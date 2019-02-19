@@ -41,7 +41,7 @@
         <th nzWidth="65px">单位</th>
         <th nzWidth="85px">剩余数量</th>
         <th nzWidth="85px">已售数量</th>
-        <th nzWidth="90px">未支付数量</th>
+        <th nzWidth="90px">总数量</th>
         <th nzWidth="160px">创建时间</th>
         <th>产品说明</th>
     </tr>
@@ -55,7 +55,7 @@
         <td class="text-center">{{data.productUnit}}</td>
         <td class="text-right">{{data.number}}</td>
         <td class="text-right">{{data.soldNumber}}</td>
-        <td class="text-right">{{data.unpayNumber}}</td>
+        <td class="text-right">{{data.number + data.soldNumber}}</td>
         <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
         <td>{{data.remark}}</td>
     </tr>
