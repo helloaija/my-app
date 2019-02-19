@@ -131,12 +131,11 @@ export class SellOrderComponent implements OnInit {
         ).subscribe(resp => {
             if ('0000' == resp['resultCode']) {
                 this.sellOrderEdit.setValues(resp['result']);
+                this.editModel.isVisible = true;
             } else {
                 this.messageService.create('error', resp['resultMessage']);
             }
         });
-
-        this.editModel.isVisible = true;
     }
 
     /**

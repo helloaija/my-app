@@ -1,4 +1,4 @@
-
+<nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
 <nz-layout class="layout">
   <nz-header class="home-header">
     <div class="home-logo"></div>
@@ -6,34 +6,34 @@
       <h1>亲亿家产品管理</h1>
     </div>
     <div class="home-opt">
-      欢迎您：石同乐&nbsp;&nbsp;&nbsp;&nbsp;<a>退出</a>
+      欢迎您：<a>{{userInfo.userName}}</a>&nbsp;&nbsp;&nbsp;&nbsp;<a (click)="logout()">退出</a>
     </div>
   </nz-header>
   <nz-layout>
     <nz-sider [nzWidth]="200" style="background:#fff">
-        <!--<ul nz-menu [nzMode]="'inline'" style="height:100%">-->
-            <!--<view-left-menu [menuTree]="menuTree" (onItemClickEvent)="newTab($event)"></view-left-menu>-->
-        <!--</ul>-->
+        <ul nz-menu [nzMode]="'inline'" style="height:100%">
+            <view-left-menu [menuTree]="menuTree" (onItemClickEvent)="newTab($event)"></view-left-menu>
+        </ul>
 
-      <ul nz-menu [nzMode]="'inline'" style="height:100%">
-        <li nz-submenu>
-          <span title><i nz-icon type="shop"></i>业务管理</span>
-          <ul>
-            <li nz-menu-item (click)="newTab('产品管理')">产品管理</li>
-            <li nz-menu-item (click)="newTab('库存数据')">库存数据</li>
-            <li nz-menu-item (click)="newTab('进货单')">进货单</li>
-            <li nz-menu-item (click)="newTab('销售单')">销售单</li>
-          </ul>
-        </li>
-        <li nz-submenu>
-          <span title><i nz-icon type="setting"></i>系统管理</span>
-          <ul>
-            <li nz-menu-item (click)="newTab('菜单管理')">菜单管理</li>
-            <li nz-menu-item (click)="newTab('角色管理')">角色管理</li>
-            <li nz-menu-item (click)="newTab('用户管理')">用户管理</li>
-          </ul>
-        </li>
-      </ul>
+      <!--<ul nz-menu [nzMode]="'inline'" style="height:100%">-->
+        <!--<li nz-submenu>-->
+          <!--<span title><i nz-icon type="shop"></i>业务管理</span>-->
+          <!--<ul>-->
+            <!--<li nz-menu-item (click)="newTab('产品管理')">产品管理</li>-->
+            <!--<li nz-menu-item (click)="newTab('库存数据')">库存数据</li>-->
+            <!--<li nz-menu-item (click)="newTab('进货单')">进货单</li>-->
+            <!--<li nz-menu-item (click)="newTab('销售单')">销售单</li>-->
+          <!--</ul>-->
+        <!--</li>-->
+        <!--<li nz-submenu>-->
+          <!--<span title><i nz-icon type="setting"></i>系统管理</span>-->
+          <!--<ul>-->
+            <!--<li nz-menu-item (click)="newTab('菜单管理')">菜单管理</li>-->
+            <!--<li nz-menu-item (click)="newTab('角色管理')">角色管理</li>-->
+            <!--<li nz-menu-item (click)="newTab('用户管理')">用户管理</li>-->
+          <!--</ul>-->
+        <!--</li>-->
+      <!--</ul>-->
     </nz-sider>
     <nz-layout style="padding:0 5px 5px">
       <nz-content style="background:#fff; padding: 5px; min-height: 280px;">
@@ -59,3 +59,4 @@
     </nz-layout>
   </nz-layout>
 </nz-layout>
+</nz-spin>

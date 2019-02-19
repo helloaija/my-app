@@ -1,119 +1,75 @@
-import {Component, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, OnInit} from '@angular/core';
+import {ContentService} from './content.service';
+import {finalize} from 'rxjs/operators';
+import {NzMessageService} from 'ng-zorro-antd';
+import {Router} from '@angular/router';
 
 @Component({
-    templateUrl: "./content.component.html",
+    templateUrl: './content.component.html',
     styleUrls: ['./content.component.less']
 })
 
-export class ContentComponent {
+export class ContentComponent implements OnInit {
     tabs = ['首页'];
     selectedIndex = 0;
+    isSpinning = false;
 
+    userInfo = {userName: ''};
+    menuTree = [];
+
+    constructor(private contentService: ContentService, private messageBar: NzMessageService, private router: Router) {
+    }
+
+    ngOnInit(): void {
+        this.isSpinning = true;
+        this.contentService.getUserInfo().pipe(finalize(() => {
+            this.isSpinning = false;
+        })).subscribe(data => {
+            if ('0000' == data['resultCode']) {
+                // 加载菜单
+                this.menuTree = data['result']['menu'];
+                // 加载用户信息
+                this.userInfo = data['result']['user'];
+            } else {
+                this.messageBar.create('error', data['resultMessage']);
+            }
+        });
+    }
+
+    /**
+     * 关闭tab
+     * @param tab
+     */
     closeTab(tab: string): void {
         this.tabs.splice(this.tabs.indexOf(tab), 1);
     }
 
-    newTab(tab: string): void {
-      var tapIndex = this.tabs.indexOf(tab);
-      if (tapIndex == -1) {
-        this.tabs.push(tab);
-        this.selectedIndex = this.tabs.length;
-        return;
-      }
+    /**
+     * 打开tab
+     * @param e
+     */
+    newTab(e: EventEmitter<any>): void {
+        var tapIndex = this.tabs.indexOf(e['title']);
+        if (tapIndex == -1) {
+            this.tabs.push(e['title']);
+            this.selectedIndex = this.tabs.length;
+            return;
+        }
 
-      this.selectedIndex = tapIndex;
+        this.selectedIndex = tapIndex;
     }
 
-    // newTab(e: EventEmitter<any>): void {
-        // var tapIndex = this.tabs.indexOf(tab);
-        // if (tapIndex == -1) {
-        //     this.tabs.push(tab);
-        //     this.selectedIndex = this.tabs.length;
-        //     return;
-        // }
-        //
-        // this.selectedIndex = tapIndex;
-    // }
-
-    menuTree = [{
-        "title": "Item-1",
-        "iconClass": "fa fa fa-flask",
-        "link": "#1",
-        "notice": 0,
-        "subMenus": null
-    }, {
-        "title": "Item-2", "iconClass": "fa fa-level-down", "link": null, "notice": 0,
-        "subMenus": [{
-            "title": "Item-2-1",
-            "iconClass": "fa fa fa-flask",
-            "link": "#2",
-            "notice": 0,
-            "subMenus": null
-        }, {
-            "title": "Item-2-2",
-            "iconClass": "fa fa fa-flask",
-            "link": "#3",
-            "notice": 0,
-            "subMenus": null
-        }]
-    }, {
-        "title": "Item-3", "iconClass": "fa fa-level-down", "link": null, "notice": 4,
-        "subMenus": [{
-            "title": "Item-3-1",
-            "iconClass": "fa fa fa-flask",
-            "link": "#4",
-            "notice": 1,
-            "subMenus": null
-        }, {
-            "title": "Item-3-2",
-            "iconClass": "fa fa fa-flask",
-            "link": null,
-            "notice": 3,
-            "subMenus": [
-                {
-                    "title": "Item-3-2-1",
-                    "iconClass": "fa fa fa-flask",
-                    "link": "#6",
-                    "notice": 1,
-                    "subMenus": null
-                },
-                {
-                    "title": "Item-3-2-2",
-                    "iconClass": "fa fa fa-flask",
-                    "link": "#7",
-                    "notice": 2,
-                    "subMenus": [
-                        {
-                            "title": "Item-4-2-1",
-                            "iconClass": "fa fa fa-flask",
-                            "link": "#6",
-                            "notice": 1,
-                            "subMenus": null
-                        },
-                        {
-                            "title": "Item-4-2-2",
-                            "iconClass": "fa fa fa-flask",
-                            "link": "#7",
-                            "notice": 2,
-                            "subMenus": [
-                                {
-                                    "title": "Item-5-2-1",
-                                    "iconClass": "fa fa fa-flask",
-                                    "link": "#6",
-                                    "notice": 1,
-                                    "subMenus": null
-                                },
-                                {
-                                    "title": "Item-5-2-2",
-                                    "iconClass": "fa fa fa-flask",
-                                    "link": "#7",
-                                    "notice": 2,
-                                    "subMenus": null
-                                }]
-                        }]
-                }]
-        }]
-    }];
-
+    /**
+     * 退出登录
+     */
+    logout(): void {
+        this.contentService.logout().subscribe(data => {
+            if ('0000' == data['resultCode']) {
+                this.router.navigateByUrl('toLogin');
+            } else {
+                this.messageBar.create('error', data['resultMessage']);
+            }
+        });
+    }
 }
 

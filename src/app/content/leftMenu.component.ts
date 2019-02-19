@@ -4,22 +4,18 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
     selector: 'view-left-menu',
     template: `
         <div *ngFor="let item of menuTree">
-            <li nz-submenu *ngIf="item.subMenus && item.subMenus.length > 0">
-                <span title><i nz-icon type=""></i>{{item.title}}</span>
+            <li nz-submenu *ngIf="item.children && item.children.length > 0">
+                <span title>{{item.title}}</span>
                 <ul>
-                    <view-left-menu [menuTree]="item.subMenus" (onItemClickEvent)="itemClick($event)"></view-left-menu>
+                    <view-left-menu [menuTree]="item.children" (onItemClickEvent)="itemClick($event)"></view-left-menu>
                 </ul>
             </li>
-            <li *ngIf="!item.subMenus || item.subMenus.length == 0"
+            <li *ngIf="!item.children || item.children.length == 0"
                 nz-menu-item (click)="itemClick(item)">{{item.title}}
             </li>
         </div>
     `,
-    styles: [
-            `nz-form-label {
-            width: 90px;
-        }`
-    ]
+    styles: []
 })
 
 export class LeftMenuComponent {
