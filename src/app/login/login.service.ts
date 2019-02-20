@@ -11,6 +11,6 @@ export class LoginService {
     doLogin(username: string, password: string) {
         let params = {username: username, password: password};
 
-        return this.http.post("/login", null, {params: params});
+        return this.http.post("/admin/login", null, {params: params});
     }
 }
