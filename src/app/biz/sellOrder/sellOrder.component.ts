@@ -44,8 +44,7 @@ export class SellOrderComponent implements OnInit {
 
     @ViewChild('sellEditComponent')
     sellOrderEdit: SellOrderEditComponent;
-
-    orderStatusOfOption = [{name: '未支付', value: 'UNPAY'}, {name: '已支付', value: 'HASPAY'}];
+    orderStatusOfOption = [{name: '未支付', value: 'UNPAY'}, {name: '未支付完', value: 'UNPAYALL'}, {name: '完成支付', value: 'HASPAYALL'}];
 
     constructor(private sellOrderService: SellOrderService, private commonUtils: CommonUtils, private fb: FormBuilder,
                 private messageService: NzMessageService) {
@@ -235,7 +234,7 @@ export class SellOrderComponent implements OnInit {
 @Pipe({name: 'sellOrderStatusType'})
 export class SellOrderStatusPipe implements PipeTransform {
     transform(value: string): string {
-        let params = {UNPAY: '未支付', HASPAY: '已支付'};
+        let params = {UNPAY: '未支付', UNPAYALL: '未支付完', HASPAYALL: '完成支付'};
         return params[value];
     }
 }

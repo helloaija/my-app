@@ -14,24 +14,12 @@ import {StockOrderService} from './stockOrder.service';
                 <nz-form-control>
                     <nz-input-group>
                         <nz-input-number formControlName="orderAmount" [nzMin]="0" [nzMax]="9999999" [nzStep]="0.1"
-                                         [nzPlaceHolder]="'请输入订单价格'" [nzPrecision]="2" style="width: 165px;">
+                                         [nzPlaceHolder]="'请输入订单价格'" [nzPrecision]="2" [nzDisabled]="true"
+                                         style="width: 165px;">
                         </nz-input-number>
                     </nz-input-group>
                     <nz-form-explain *ngIf="editForm.get('orderAmount').dirty && editForm.get('orderAmount').errors">
                         请输入订单价格！
-                    </nz-form-explain>
-                </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
-                <nz-form-label nzFor="modifyAmount" nzRequired>调整价格</nz-form-label>
-                <nz-form-control>
-                    <nz-input-group>
-                        <nz-input-number formControlName="modifyAmount" [nzMin]="0" [nzMax]="9999999" [nzStep]="0.1"
-                                         [nzPlaceHolder]="'请输入调整价格'" [nzPrecision]="2" style="width: 165px;">
-                        </nz-input-number>
-                    </nz-input-group>
-                    <nz-form-explain *ngIf="editForm.get('modifyAmount').dirty && editForm.get('modifyAmount').errors">
-                        请输入调整价格！
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
@@ -51,17 +39,6 @@ import {StockOrderService} from './stockOrder.service';
             <br/>
 
             <nz-form-item>
-                <nz-form-label nzFor="orderStatus" nzRequired>订单状态</nz-form-label>
-                <nz-form-control>
-                    <nz-input-group>
-                        <nz-select style="width: 165px;" formControlName="orderStatus" [nzAllowClear]="true">
-                            <nz-option *ngFor="let option of orderStatusOfOption" [nzLabel]="option.name"
-                                       [nzValue]="option.value"></nz-option>
-                        </nz-select>
-                    </nz-input-group>
-                </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
                 <nz-form-label nzFor="payTime">支付时间</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
@@ -74,14 +51,14 @@ import {StockOrderService} from './stockOrder.service';
                 </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-                <nz-form-label nzFor="finishTime">完成时间</nz-form-label>
+                <nz-form-label nzFor="orderTime">进货时间</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="请输入完成时间"
-                                        formControlName="finishTime" [nzStyle]="{width: '165px'}"></nz-date-picker>
+                        <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="请输入进货时间"
+                                        formControlName="orderTime" [nzStyle]="{width: '165px'}"></nz-date-picker>
                     </nz-input-group>
-                    <nz-form-explain *ngIf="editForm.get('finishTime').dirty && editForm.get('finishTime').errors">
-                        请输入完成时间！
+                    <nz-form-explain *ngIf="editForm.get('orderTime').dirty && editForm.get('orderTime').errors">
+                        请输入进货时间！
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
@@ -187,8 +164,10 @@ import {StockOrderService} from './stockOrder.service';
                 <nz-form-item>
                     <nz-form-label [nzFor]="control.priceControl" nzRequired>单价</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="请填写单价" [attr.id]="control.index"
-                               [formControlName]="control.priceControl">
+                        <nz-input-number [formControlName]="control.priceControl" [nzMin]="0" [nzMax]="99999" [nzStep]="0.1"
+                                         [nzPlaceHolder]="'请填写单价'" [nzPrecision]="2" [nzDisabled]="false"
+                                         [attr.id]="control.index" (ngModelChange)="calcOrderAmount()" style="width: 165px;">
+                        </nz-input-number>
                         <nz-form-explain
                                 *ngIf="editForm.get(control.priceControl).dirty && editForm.get(control.priceControl).errors">
                             请填写单价！
@@ -198,8 +177,10 @@ import {StockOrderService} from './stockOrder.service';
                 <nz-form-item>
                     <nz-form-label [nzFor]="control.numberControl" nzRequired>数量</nz-form-label>
                     <nz-form-control>
-                        <input nz-input placeholder="请填写数量" [attr.id]="control.index"
-                               [formControlName]="control.numberControl" style="width: 100px;">
+                        <nz-input-number [formControlName]="control.numberControl" [nzMin]="0" [nzMax]="999" [nzStep]="1"
+                                         [nzPlaceHolder]="'请填写数量'" [nzPrecision]="0" [nzDisabled]="false"
+                                         [attr.id]="control.index" (ngModelChange)="calcOrderAmount()" style="width: 100px;">
+                        </nz-input-number>
                         <i nz-icon type="minus-circle-o" class="dynamic-delete-button"
                            (click)="removeProductField(control, $event)"
                            style="margin-left: 15px;"></i>
@@ -222,19 +203,17 @@ import {StockOrderService} from './stockOrder.service';
 export class StockOrderEditComponent implements OnInit {
     editForm: FormGroup;
 
-    orderStatusOfOption = [{name: '未支付', value: 'UNPAY'}, {name: '已支付', value: 'HASPAY'}];
-
     productArray: Array<StockProduct> = [];
 
     constructor(private fb: FormBuilder, private commonUtils: CommonUtils, private stockOrderService: StockOrderService, private el: ElementRef) {
         this.editForm = this.fb.group({
             id: ['', []],
             orderAmount: ['', [Validators.required]],
-            modifyAmount: ['', [Validators.required]],
+            // modifyAmount: ['', [Validators.required]],
             hasPayAmount: ['', [Validators.required]],
-            orderStatus: ['', [Validators.required]],
+            // orderStatus: ['', [Validators.required]],
             payTime: ['', []],
-            finishTime: ['', []],
+            orderTime: ['', []],
             supplierName: ['', []],
             supplierPhone: ['', []],
             supplierAddress: ['', []],
@@ -265,8 +244,8 @@ export class StockOrderEditComponent implements OnInit {
      */
     public getValues(): any {
         let formValue = this.commonUtils.nullTrim(this.editForm.value);
-        if (formValue['finishTime']) {
-            formValue['finishTime'] = formatDate(formValue['finishTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        if (formValue['orderTime']) {
+            formValue['orderTime'] = formatDate(formValue['orderTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
         }
         if (formValue['payTime']) {
             formValue['payTime'] = formatDate(formValue['payTime'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
@@ -297,7 +276,7 @@ export class StockOrderEditComponent implements OnInit {
     }
 
     public resetEditForm(): void {
-        this.editForm.reset({orderStatus: 'HASPAY'});
+        this.editForm.reset({orderAmount: 0});
         this.addProductField();
     }
 
@@ -316,9 +295,7 @@ export class StockOrderEditComponent implements OnInit {
                 `stockProductList[${i}]_price`, `stockProductList[${i}]_number`, {});
             this.productArray.push(control);
             this.addProductControl(control, productList[i]);
-            // this.searchProduct(control, productList[i]['productTitle']);
             this.loadMore(control, true, {productId: productList[i]['productId']});
-            // console.log(this.el.nativeElement.querySelector('.btn1'));
         }
     }
 
@@ -483,6 +460,19 @@ export class StockOrderEditComponent implements OnInit {
         console.log('productSelectChange', selectedProduct);
         this.editForm.controls[control.titleControl].setValue(selectedProduct['title']);
         this.editForm.controls[control.priceControl].setValue(selectedProduct['price']);
+    }
+
+    /**
+     * 计算订单金额
+     */
+    calcOrderAmount(): void {
+        let orderAmount = 0;
+        for (let i = 0; i < this.productArray.length; i++) {
+            let number = this.editForm.controls[this.productArray[i].numberControl].value;
+            let price = this.editForm.controls[this.productArray[i].priceControl].value;
+            orderAmount = orderAmount + (number * price);
+        }
+        this.editForm.controls['orderAmount'].setValue(orderAmount);
     }
 }
 
