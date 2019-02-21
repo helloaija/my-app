@@ -11,6 +11,7 @@ export class SellOrderService {
     updateSellOrderUrl = '/admin/sellOrder/updateSellOrder';
     deleteSellOrderUrl = '/admin/sellOrder/deleteSellOrder';
     listProductUrl = "/admin/product/listProductPage";
+    listBuyerUrl = "/admin/buyer/listUserPage";
 
     getSellOrders(params): Observable<Object> {
         return this.http.get(`${this.listSellOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
@@ -35,6 +36,10 @@ export class SellOrderService {
 
     getProducts(params): Observable<Object> {
         return this.http.get(`${this.listProductUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    }
+
+    listBuyer(params): Observable<Object> {
+        return this.http.get(`${this.listBuyerUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
     constructor(private http: HttpClient) {

@@ -63,6 +63,7 @@
             <th nzWidth="100px">已支付金额</th>
             <th nzWidth="100px">订单状态</th>
             <th nzWidth="150px">买家名称</th>
+            <th nzWidth="150px">买家电话</th>
             <th nzWidth="160px">销售时间</th>
             <th nzWidth="170px">创建时间</th>
             <th nzWidth="200px">备注</th>
@@ -79,7 +80,8 @@
                 <!--<td class="text-right">{{data.modifyAmount | currency:'￥'}}</td>-->
                 <td class="text-right">{{data.hasPayAmount | currency:'￥'}}</td>
                 <td>{{data.orderStatus | sellOrderStatusType}}</td>
-                <td>{{data.buyerName}}</td>
+                <td>{{data.userName}}</td>
+                <td>{{data.mobilePhone}}</td>
                 <td class="text-center">{{data.orderTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
                 <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
                 <td>{{data.remark}}</td>

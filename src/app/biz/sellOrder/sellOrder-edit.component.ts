@@ -23,19 +23,6 @@ import {SellOrderService} from './sellOrder.service';
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
-            <!--<nz-form-item>-->
-            <!--<nz-form-label nzFor="modifyAmount" nzRequired>调整价格</nz-form-label>-->
-            <!--<nz-form-control>-->
-            <!--<nz-input-group>-->
-            <!--<nz-input-number formControlName="modifyAmount" [nzMin]="0" [nzMax]="9999999" [nzStep]="0.1"-->
-            <!--[nzPlaceHolder]="'请输入调整价格'" [nzPrecision]="2" style="width: 165px;">-->
-            <!--</nz-input-number>-->
-            <!--</nz-input-group>-->
-            <!--<nz-form-explain *ngIf="editForm.get('modifyAmount').dirty && editForm.get('modifyAmount').errors">-->
-            <!--请输入调整价格！-->
-            <!--</nz-form-explain>-->
-            <!--</nz-form-control>-->
-            <!--</nz-form-item>-->
             <nz-form-item>
                 <nz-form-label nzFor="hasPayAmount" nzRequired>已支付金额</nz-form-label>
                 <nz-form-control>
@@ -49,19 +36,28 @@ import {SellOrderService} from './sellOrder.service';
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label nzFor="userId">购买用户</nz-form-label>
+                <nz-form-control>
+                    <nz-input-group>
+                        <nz-select formControlName="userId"
+                                   (nzScrollToBottom)="loadUserOptions(false)"
+                                   (nzOnSearch)="searchUser($event)"
+                                   (nzOpenChange)="userOpenChange($event)"
+                                   nzPlaceHolder="请选择产品" nzAllowClear nzShowSearch nzServerSearch="true"
+                                   style="width: 160px;">
+                            <nz-option *ngFor="let opt of userIdCom.optionList" [nzValue]="opt.id"
+                                       [nzLabel]="opt.userName"></nz-option>
+                            <nz-option *ngIf="userIdCom.isLoading" nzDisabled nzCustomContent>
+                                <i nz-icon type="loading" class="loading-icon"></i> Loading Data...
+                            </nz-option>
+                        </nz-select>
+                    </nz-input-group>
+                </nz-form-control>
+            </nz-form-item>
             <br/>
 
-            <!--<nz-form-item>-->
-            <!--<nz-form-label nzFor="orderStatus" nzRequired>订单状态</nz-form-label>-->
-            <!--<nz-form-control>-->
-            <!--<nz-input-group>-->
-            <!--<nz-select style="width: 165px;" formControlName="orderStatus" [nzAllowClear]="true">-->
-            <!--<nz-option *ngFor="let option of orderStatusOfOption" [nzLabel]="option.name"-->
-            <!--[nzValue]="option.value"></nz-option>-->
-            <!--</nz-select>-->
-            <!--</nz-input-group>-->
-            <!--</nz-form-control>-->
-            <!--</nz-form-item>-->
             <nz-form-item>
                 <nz-form-label nzFor="payTime">支付时间</nz-form-label>
                 <nz-form-control>
@@ -178,7 +174,6 @@ import {SellOrderService} from './sellOrder.service';
                                 <i nz-icon type="loading" class="loading-icon"></i> Loading Data...
                             </nz-option>
                         </nz-select>
-
                         <nz-form-explain
                                 *ngIf="editForm.get(control.titleControl).dirty && editForm.get(control.titleControl).errors">
                             请选择产品！
@@ -229,8 +224,12 @@ import {SellOrderService} from './sellOrder.service';
 
 export class SellOrderEditComponent implements OnInit {
     editForm: FormGroup;
-
+    // 产品列表属性
     productArray: Array<SellProduct> = [];
+    // 用户选择属性
+    userIdCom = {
+        currentPage: 1, pageSize: 10, totalCount: 0, isLoading: false, isInit: false, queryName: '', optionList: []
+    };
 
     constructor(private fb: FormBuilder, private commonUtils: CommonUtils, private sellOrderService: SellOrderService, private el: ElementRef) {
         this.editForm = this.fb.group({
@@ -245,7 +244,8 @@ export class SellOrderEditComponent implements OnInit {
             buyerPhone: ['', []],
             buyerAddress: ['', []],
             buyerMessage: ['', []],
-            remark: ['', []]
+            remark: ['', []],
+            userId: ['', []]
         });
     }
 
@@ -298,11 +298,15 @@ export class SellOrderEditComponent implements OnInit {
     public setValues(params): void {
         // 重置表单
         this.editForm.reset();
+        this.resetUserCom();
+        var userOpt = {id: params['userId'], userName: params['userName']};
+        this.userIdCom.optionList.push(userOpt);
         this.editForm.patchValue(params);
         this.setProductValues(params['sellProductList']);
     }
 
     public resetEditForm(): void {
+        this.resetUserCom();
         this.editForm.reset({orderAmount: 0});
         this.addProductField();
     }
@@ -500,6 +504,71 @@ export class SellOrderEditComponent implements OnInit {
             orderAmount = orderAmount + (number * price);
         }
         this.editForm.controls['orderAmount'].setValue(orderAmount);
+    }
+
+    /**
+     * 购买用户下拉框-加载下拉选项
+     * @param reload
+     * @param userName
+     */
+    loadUserOptions(reload: boolean = false): void {
+        if (reload) {
+            // 重新加载
+            this.userIdCom['optionList'] = [];
+            this.userIdCom['currentPage'] = 1;
+        } else {
+            // 滚动加载
+            this.userIdCom['currentPage'] = this.userIdCom['currentPage'] + 1;
+            if (this.userIdCom['optionList'].length >= this.userIdCom['totalCount']) {
+                return;
+            }
+        }
+
+        let params = {currentPage: this.userIdCom['currentPage'], userName: this.userIdCom['queryName']};
+
+        this.userIdCom['isLoading'] = true;
+        this.sellOrderService.listBuyer(params).subscribe(data => {
+            this.userIdCom['isLoading'] = false;
+            if (data['result']['recordList'] == null) {
+                data['result']['recordList'] = [];
+            }
+            this.userIdCom['totalCount'] = data['result']['totalCount'];
+            this.userIdCom['optionList'] = [...this.userIdCom['optionList'], ...data['result']['recordList']];
+        });
+    }
+
+    /**
+     *  购买用户下拉框-搜索用户
+     * @param e
+     */
+    searchUser(e: EventEmitter<string>): void {
+        this.userIdCom.queryName = String(e);
+        this.loadUserOptions(true);
+    }
+
+    /**
+     * 购买用户下拉框-打开状态变化回调
+     * @param control
+     * @param e
+     */
+    userOpenChange(e: EventEmitter<boolean>): void {
+        if (e) {
+            // 当展开时，判断是否需要重新加载下拉选项
+            if (!this.userIdCom['isInit']) {
+                this.userIdCom['isInit'] = true;
+                this.userIdCom.queryName = '';
+                this.loadUserOptions(true);
+            }
+        }
+    }
+
+    /**
+     * 购买用户下拉框-重置
+     */
+    resetUserCom(): void {
+        this.userIdCom = {
+            currentPage: 1, pageSize: 10, totalCount: 0, isLoading: false, isInit: false, queryName: '', optionList: []
+        };
     }
 }
 
