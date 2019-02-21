@@ -15,6 +15,7 @@ import {StoreModule} from '../biz/store/store.module';
 import {StockOrderModule} from '../biz/stockOrder/stockOrder.module';
 import {SellOrderModule} from '../biz/sellOrder/sellOrder.module';
 import {LeftMenuComponent} from "./leftMenu.component";
+import {BuyerModule} from "../biz/buyer/buyer.module";
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import {LeftMenuComponent} from "./leftMenu.component";
         RoleModule,
         StoreModule,
         StockOrderModule,
-        SellOrderModule
+        SellOrderModule,
+        BuyerModule
     ],
     declarations: [
         ContentComponent, ContentIndexComponent, LeftMenuComponent

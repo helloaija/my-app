@@ -1,0 +1,78 @@
+<nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
+    <form nz-form [formGroup]="queryForm" class="ant-advanced-search-form">
+        <nz-form-item style="margin: auto;">
+            <nz-form-label nzFor="userName">买家名称</nz-form-label>
+            <nz-form-control>
+                <input nz-input placeholder="买家名称" formControlName="userName">
+            </nz-form-control>
+            <nz-form-label nzFor="mobilePhone">买家电话</nz-form-label>
+            <nz-form-control>
+                <input nz-input placeholder="买家电话" formControlName="mobilePhone">
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item style="margin: auto;">
+            <nz-form-label nzFor="createTimeBegin">创建开始时间</nz-form-label>
+            <nz-form-control>
+                <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="创建开始时间"
+                                formControlName="createTimeBegin" [nzStyle]="{width: '165px'}"></nz-date-picker>
+            </nz-form-control>
+            <nz-form-label nzFor="createTimeEnd">创建结束时间</nz-form-label>
+            <nz-form-control>
+                <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="创建结束时间"
+                                formControlName="createTimeEnd" [nzStyle]="{width: '165px'}"></nz-date-picker>
+            </nz-form-control>
+
+            <div class="queryFormBtn">
+                <button nz-button (click)="query()">查询</button>
+                <button nz-button (click)="resetForm()">清除</button>
+                <button nz-button (click)="addFormShow()">添加</button>
+            </div>
+        </nz-form-item>
+    </form>
+
+    <nz-table #ajaxTable
+              nzBordered="true"
+              nzShowSizeChanger
+              [nzFrontPagination]="false"
+              [nzData]="table.dataSet"
+              [nzLoading]="table.loading"
+              [nzTotal]="table.total"
+              [(nzPageIndex)]="table.pageIndex"
+              [(nzPageSize)]="table.pageSize"
+              (nzPageIndexChange)="searchData()"
+              (nzPageSizeChange)="searchData(true)"
+              [nzScroll]="{ x:'300px',y:'500px'}">
+        <thead>
+        <tr>
+            <th nzWidth="45px">序号</th>
+            <th nzWidth="120px">买家名称</th>
+            <th nzWidth="120px">买家电话</th>
+            <th nzWidth="200px">买家地址</th>
+            <th nzWidth="160px">创建时间</th>
+            <th nzWidth="200px">备注</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let data of ajaxTable.data; index as i">
+            <td class="text-center">{{i + 1}}</td>
+            <td>{{data.userName}}</td>
+            <td>{{data.mobilePhone}}</td>
+            <td>{{data.address}}</td>
+            <td>{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+            <td>{{data.remark}}</td>
+            <td>
+                <a href="javascript:void(0);" (click)="updateFormShow(data)">修改</a>
+            </td>
+        </tr>
+        </tbody>
+    </nz-table>
+
+    <!--编辑表单-->
+    <nz-modal [(nzVisible)]="editModel.isVisible" [nzTitle]="editModel.title" nzKeyboard="false" nzMaskClosable="false"
+              (nzOnCancel)="editFormHandleCancel()" (nzOnOk)="editFormHandleOk()" [nzOkLoading]="editModel.isOkLoading"
+              nzWidth="830px">
+        <view-buyer-edit #buyerEditComponent></view-buyer-edit>
+    </nz-modal>
+
+</nz-spin>

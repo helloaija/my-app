@@ -54,6 +54,7 @@ export class MenuManageComponent implements OnInit {
             menuType: ['MENU', [Validators.required]],
             url: ['', [Validators.required]],
             status: ['enable', [Validators.required]],
+            sortNumber: ['', []],
             remark: ['', []]
         });
     }
