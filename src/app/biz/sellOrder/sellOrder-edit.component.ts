@@ -82,56 +82,6 @@ import {SellOrderService} from './sellOrder.service';
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
-            <br/>
-
-            <nz-form-item>
-                <nz-form-label nzFor="buyerName">买家名称</nz-form-label>
-                <nz-form-control>
-                    <nz-input-group>
-                        <input nz-input formControlName="buyerName" placeholder="请输入买家名称">
-                    </nz-input-group>
-                    <nz-form-explain *ngIf="editForm.get('buyerName').dirty && editForm.get('buyerName').errors">
-                        请输入买家名称！
-                    </nz-form-explain>
-                </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
-                <nz-form-label nzFor="buyerPhone">买家电话</nz-form-label>
-                <nz-form-control>
-                    <nz-input-group>
-                        <input nz-input formControlName="buyerPhone" placeholder="请输入买家电话">
-                    </nz-input-group>
-                    <nz-form-explain
-                            *ngIf="editForm.get('buyerPhone').dirty && editForm.get('buyerPhone').errors">
-                        请输入买家电话！
-                    </nz-form-explain>
-                </nz-form-control>
-            </nz-form-item>
-            <br/>
-
-            <nz-form-item>
-                <nz-form-label nzFor="buyerAddress">买家地址</nz-form-label>
-                <nz-form-control>
-                    <nz-input-group>
-                        <textarea nz-input formControlName="buyerAddress" placeholder="请输入买家地址"
-                                  style="width: 647px;"
-                                  [nzAutosize]="{minRows: 4, maxRows: 4}"></textarea>
-                    </nz-input-group>
-                </nz-form-control>
-            </nz-form-item>
-
-            <br/>
-
-            <nz-form-item>
-                <nz-form-label nzFor="buyerMessage">买家信息</nz-form-label>
-                <nz-form-control>
-                    <nz-input-group>
-                        <textarea nz-input formControlName="buyerMessage" placeholder="请输入买家信息"
-                                  style="width: 647px;"
-                                  [nzAutosize]="{minRows: 4, maxRows: 4}"></textarea>
-                    </nz-input-group>
-                </nz-form-control>
-            </nz-form-item>
 
             <br/>
 

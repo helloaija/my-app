@@ -52,7 +52,11 @@ export class SellOrderComponent implements OnInit {
             orderNumber: ['', []],
             orderStatus: ['', []],
             createTimeBegin: ['', []],
-            createTimeEnd: ['', []]
+            createTimeEnd: ['', []],
+            mobilePhone: ['', []],
+            userName: ['', []],
+            orderTimeBegin: ['', []],
+            orderTimeEnd: ['', []]
         });
     }
 
@@ -65,6 +69,12 @@ export class SellOrderComponent implements OnInit {
         }
         if (params['createTimeEnd']) {
             params['createTimeEnd'] = formatDate(params['createTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (params['orderTimeBegin']) {
+            params['orderTimeBegin'] = formatDate(params['orderTimeBegin'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
+        }
+        if (params['orderTimeEnd']) {
+            params['orderTimeEnd'] = formatDate(params['orderTimeEnd'], 'yyyy-MM-dd HH:mm:ss', 'zh-Hans');
         }
 
         this.table.filterParams = this.commonUtils.nullTrim(params);
