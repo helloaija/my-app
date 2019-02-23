@@ -16,6 +16,7 @@ import {StockOrderModule} from '../biz/stockOrder/stockOrder.module';
 import {SellOrderModule} from '../biz/sellOrder/sellOrder.module';
 import {LeftMenuComponent} from "./leftMenu.component";
 import {BuyerModule} from "../biz/buyer/buyer.module";
+import {UserBillModule} from '../statistics/userBill/userBill.module';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import {BuyerModule} from "../biz/buyer/buyer.module";
         StoreModule,
         StockOrderModule,
         SellOrderModule,
-        BuyerModule
+        BuyerModule,
+        UserBillModule
     ],
     declarations: [
         ContentComponent, ContentIndexComponent, LeftMenuComponent
