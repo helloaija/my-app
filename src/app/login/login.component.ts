@@ -33,7 +33,8 @@ export class LoginComponent implements OnInit {
 
         let username = this.validateForm.controls["userName"].value;
         let password = this.validateForm.controls["password"].value;
-        this.loginService.doLogin(username, password).subscribe(res => {
+        let validCode = this.validateForm.controls["validCode"].value;
+        this.loginService.doLogin(username, password, validCode).subscribe(res => {
             if ('0000' == res['resultCode']) {
                 // 保存token
                 this.commonServie.setJwtToken(res['result']);
@@ -57,9 +58,9 @@ export class LoginComponent implements OnInit {
 
     ngOnInit(): void {
         this.validateForm = this.fb.group({
-            userName: [null, [Validators.required]],
-            password: [null, [Validators.required]],
-            remember: [true]
+            userName: ['', [Validators.required]],
+            password: ['', [Validators.required]],
+            validCode: ['', [Validators.required]]
         });
     }
 }
