@@ -8,8 +8,8 @@ export class LoginService {
 
     }
 
-    doLogin(username: string, password: string) {
-        let params = {username: username, password: password};
+    doLogin(username: string, password: string, validCode: string) {
+        let params = {username: username, password: password, validCode: validCode};
 
         return this.http.post("/admin/login", null, {params: params});
     }
