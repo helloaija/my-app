@@ -51,7 +51,7 @@ import {StockOrderService} from './stockOrder.service';
                 </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-                <nz-form-label nzFor="orderTime">进货时间</nz-form-label>
+                <nz-form-label nzFor="orderTime" nzRequired>进货时间</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
                         <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="请输入进货时间"
@@ -213,7 +213,7 @@ export class StockOrderEditComponent implements OnInit {
             hasPayAmount: ['', [Validators.required]],
             // orderStatus: ['', [Validators.required]],
             payTime: ['', []],
-            orderTime: ['', []],
+            orderTime: ['', [Validators.required]],
             supplierName: ['', []],
             supplierPhone: ['', []],
             supplierAddress: ['', []],
