@@ -25,7 +25,9 @@ export class StockOrderComponent implements OnInit {
         dataSet: [],
         loading: true,
         operationOrder: null,
-        filterParams: {}
+        filterParams: {},
+        totalHasPayAmount: 0,
+        totalOrderAmount: 0
     };
 
     // 遮罩
@@ -101,8 +103,10 @@ export class StockOrderComponent implements OnInit {
         ).subscribe(data => {
             if ('0000' == data['resultCode']) {
                 let result = data['result'];
-                this.table.total = result['totalCount'];
-                this.table.dataSet = result['recordList'] ? result['recordList'] : [];
+                this.table.total = result['pageBean']['totalCount'];
+                this.table.dataSet = result['pageBean']['recordList'] ? result['pageBean']['recordList'] : [];
+                this.table.totalOrderAmount = result['totalOrderAmount'] ? result['totalOrderAmount'] : 0;
+                this.table.totalHasPayAmount = result['totalHasPayAmount'] ? result['totalHasPayAmount'] : 0;
             }
         });
     }

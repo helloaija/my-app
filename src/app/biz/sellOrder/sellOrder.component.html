@@ -126,6 +126,13 @@
                 <td class="exp-emp" colspan="5"></td>
             </tr>
         </ng-template>
+        <tr>
+            <td colspan="12" class="text-center">
+                订单总额：{{table.totalOrderAmount | currency:'￥'}}&nbsp;&nbsp;&nbsp;&nbsp;
+                支付总额：{{table.totalHasPayAmount | currency:'￥'}}&nbsp;&nbsp;&nbsp;&nbsp;
+                未支付总额：{{table.totalOrderAmount - table.totalHasPayAmount | currency:'￥'}}
+            </td>
+        </tr>
         </tbody>
     </nz-table>
 
