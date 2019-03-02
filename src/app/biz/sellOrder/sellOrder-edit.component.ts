@@ -71,7 +71,7 @@ import {SellOrderService} from './sellOrder.service';
                 </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-                <nz-form-label nzFor="orderTime">销售时间</nz-form-label>
+                <nz-form-label nzFor="orderTime" nzRequired>销售时间</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
                         <nz-date-picker nzShowTime nzFormat="yyyy-MM-dd HH:mm:ss" nzPlaceHolder="请输入销售时间"
@@ -189,11 +189,7 @@ export class SellOrderEditComponent implements OnInit {
             hasPayAmount: ['', [Validators.required]],
             // orderStatus: ['', [Validators.required]],
             payTime: ['', []],
-            orderTime: ['', []],
-            buyerName: ['', []],
-            buyerPhone: ['', []],
-            buyerAddress: ['', []],
-            buyerMessage: ['', []],
+            orderTime: ['', [Validators.required]],
             remark: ['', []],
             userId: ['', []]
         });

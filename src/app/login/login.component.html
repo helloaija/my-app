@@ -32,7 +32,7 @@
                 <nz-form-item>
                     <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="validCode">验证码</nz-form-label>
                     <nz-form-control [nzSm]="19" [nzXs]="24">
-                        <nz-input-group [nzPrefix]="prefixUser">
+                        <nz-input-group [nzPrefix]="prefixSafety">
                             <input type="text" nz-input formControlName="validCode" placeholder="验证码">
                         </nz-input-group>
                         <nz-form-explain
@@ -50,6 +50,7 @@
             </form>
             <ng-template #prefixUser><i nz-icon type="user"></i></ng-template>
             <ng-template #prefixLock><i nz-icon type="lock"></i></ng-template>
+            <ng-template #prefixSafety><i nz-icon type="safety"></i></ng-template>
         </div>
     </div>
 </nz-spin>

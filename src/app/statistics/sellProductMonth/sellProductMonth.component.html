@@ -1,0 +1,88 @@
+<nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
+<form nz-form [formGroup]="queryForm" nzLayout="inline" class="ant-advanced-search-form">
+    <nz-form-item style="margin: auto;">
+        <nz-form-label nzFor="year">年份</nz-form-label>
+        <nz-form-control>
+            <nz-select style="width: 80px;" formControlName="year">
+                <nz-option nzLabel="2017" nzValue="2017"></nz-option>
+                <nz-option nzLabel="2018" nzValue="2018"></nz-option>
+                <nz-option nzLabel="2019" nzValue="2019"></nz-option>
+                <nz-option nzLabel="2020" nzValue="2020"></nz-option>
+                <nz-option nzLabel="2021" nzValue="2021"></nz-option>
+            </nz-select>
+        </nz-form-control>
+    </nz-form-item>
+    <nz-form-item style="margin: auto;">
+        <nz-form-label nzFor="month">月份</nz-form-label>
+        <nz-form-control>
+            <nz-select style="width: 80px;" formControlName="month" [nzAllowClear]="true">
+                <nz-option nzLabel="01" nzValue="01"></nz-option>
+                <nz-option nzLabel="02" nzValue="02"></nz-option>
+                <nz-option nzLabel="03" nzValue="03"></nz-option>
+                <nz-option nzLabel="04" nzValue="04"></nz-option>
+                <nz-option nzLabel="05" nzValue="05"></nz-option>
+                <nz-option nzLabel="06" nzValue="06"></nz-option>
+                <nz-option nzLabel="07" nzValue="07"></nz-option>
+                <nz-option nzLabel="08" nzValue="08"></nz-option>
+                <nz-option nzLabel="09" nzValue="09"></nz-option>
+                <nz-option nzLabel="10" nzValue="10"></nz-option>
+                <nz-option nzLabel="11" nzValue="11"></nz-option>
+                <nz-option nzLabel="12" nzValue="12"></nz-option>
+            </nz-select>
+        </nz-form-control>
+    </nz-form-item>
+    <nz-form-item style="margin: auto;">
+        <div class="queryFormBtn">
+            <button nz-button (click)="query()">查询</button>
+        </div>
+    </nz-form-item>
+</form>
+
+<nz-table #ajaxTable
+          nzBordered="true"
+          nzShowSizeChanger
+          [nzFrontPagination]="false"
+          [nzData]="table.dataSet"
+          [nzLoading]="table.loading"
+          [nzTotal]="table.total"
+          [(nzPageIndex)]="table.pageIndex"
+          [(nzPageSize)]="table.pageSize"
+          (nzPageIndexChange)="searchData()"
+          (nzPageSizeChange)="searchData(true)"
+          [nzScroll]="{ x:'300px',y:'500px'}">
+    <thead>
+    <tr>
+        <th nzWidth="45px">序号</th>
+        <th nzWidth="200px">产品名称</th>
+        <th nzWidth="100px">销售数量</th>
+        <th nzWidth="80px">单位</th>
+        <th nzWidth="125px">平均售价</th>
+        <th nzWidth="125px">销售总金额</th>
+        <th nzWidth="125px">最小售价</th>
+        <th nzWidth="125px">最大售价</th>
+        <th nzWidth="100px">购买人数</th>
+        <th nzWidth="100px">购买次数</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of ajaxTable.data; index as i">
+        <td class="text-center">{{i + 1}}</td>
+        <td>{{data.productTitle}}</td>
+        <td class="text-right">{{data.totalNumber}}</td>
+        <td>{{data.productUnit}}</td>
+        <td class="text-right">{{data.totalPrice / data.totalNumber | currency:'￥'}}</td>
+        <td class="text-right">{{data.totalPrice | currency:'￥'}}</td>
+        <td class="text-right">{{data.minPrice | currency:'￥'}}</td>
+        <td class="text-right">{{data.maxPrice | currency:'￥'}}</td>
+        <td class="text-right">{{data.userNumber}}</td>
+        <td class="text-right">{{data.orderNumber}}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td colspan="10" class="text-center">销售总额：{{table.totalPrice | currency:'￥'}}</td>
+    </tr>
+    </tbody>
+</nz-table>
+
+</nz-spin>
