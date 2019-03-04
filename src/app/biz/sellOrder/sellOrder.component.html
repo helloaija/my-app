@@ -120,10 +120,11 @@
             </tr>
             <tr [nzExpand]="data.expand" *ngFor="let product of data.sellProductList; index as pi">
                 <td class="exp-emp" colspan="2" style="border-right: none;"></td>
-                <td class="exp-noemp" colspan="1" style="border-right: none;">({{pi + 1}})&nbsp;&nbsp;{{product.productTitle}}</td>
+                <td class="exp-noemp" colspan="2" style="border-right: none;">({{pi + 1}})&nbsp;&nbsp;{{product.productTitle}}</td>
                 <td class="exp-noemp text-right" colspan="2" style="border-right: none;">单价：{{product.price | currency:'￥'}}</td>
-                <td class="exp-noemp text-right" colspan="2" style="border-right: none;">数量：{{product.number}}</td>
-                <td class="exp-emp" colspan="5"></td>
+                <td class="exp-noemp text-right" colspan="1" style="border-right: none;">数量：{{product.number}}</td>
+                <td class="exp-noemp" colspan="1" style="border-right: none;">{{product.productUnit}}</td>
+                <td class="exp-emp" colspan="4"></td>
             </tr>
         </ng-template>
         <tr>
