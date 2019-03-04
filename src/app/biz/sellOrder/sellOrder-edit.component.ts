@@ -109,7 +109,7 @@ import {SellOrderService} from './sellOrder.service';
                 <input nz-input [formControlName]="control.titleControl" type="hidden">
 
                 <nz-form-item>
-                    <nz-form-label [nzFor]="control.productIdControl" nzRequired>产品</nz-form-label>
+                    <nz-form-label class="product-label" [nzFor]="control.productIdControl" nzRequired>产品</nz-form-label>
                     <nz-form-control>
                         <nz-select [formControlName]="control.productIdControl"
                                    (nzScrollToBottom)="loadMore(control, false)"
@@ -130,14 +130,23 @@ import {SellOrderService} from './sellOrder.service';
                         </nz-form-explain>
                     </nz-form-control>
                 </nz-form-item>
+                
                 <nz-form-item>
-                    <nz-form-label [nzFor]="control.priceControl" nzRequired>单价</nz-form-label>
+                    <nz-form-label class="product-label">单位</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input [formControlName]="control.unitControl"
+                               style="width: 65px;border: none;" disabled>
+                    </nz-form-control>
+                </nz-form-item>
+                
+                <nz-form-item>
+                    <nz-form-label class="product-label" [nzFor]="control.priceControl" nzRequired>单价</nz-form-label>
                     <nz-form-control>
                         <nz-input-number [formControlName]="control.priceControl" [nzMin]="0" [nzMax]="99999"
                                          [nzStep]="0.1"
                                          [nzPlaceHolder]="'请填写单价'" [nzPrecision]="2" [nzDisabled]="false"
                                          [attr.id]="control.index" (ngModelChange)="calcOrderAmount()"
-                                         style="width: 165px;">
+                                         style="width: 100px;">
                         </nz-input-number>
                         <nz-form-explain
                                 *ngIf="editForm.get(control.priceControl).dirty && editForm.get(control.priceControl).errors">
@@ -146,7 +155,7 @@ import {SellOrderService} from './sellOrder.service';
                     </nz-form-control>
                 </nz-form-item>
                 <nz-form-item>
-                    <nz-form-label [nzFor]="control.numberControl" nzRequired>数量</nz-form-label>
+                    <nz-form-label class="product-label" [nzFor]="control.numberControl" nzRequired>数量</nz-form-label>
                     <nz-form-control>
                         <nz-input-number [formControlName]="control.numberControl" [nzMin]="0" [nzMax]="999"
                                          [nzStep]="1"
@@ -168,6 +177,10 @@ import {SellOrderService} from './sellOrder.service';
     styles: [
             `nz-form-label {
             width: 90px;
+        }
+        
+        .product-label {
+            width: 60px;
         }`
     ]
 })
@@ -186,7 +199,7 @@ export class SellOrderEditComponent implements OnInit {
             id: ['', []],
             orderAmount: ['0', [Validators.required]],
             // modifyAmount: ['', [Validators.required]],
-            hasPayAmount: ['', [Validators.required]],
+            hasPayAmount: ['0', [Validators.required]],
             // orderStatus: ['', [Validators.required]],
             payTime: ['', []],
             orderTime: ['', [Validators.required]],
@@ -253,7 +266,7 @@ export class SellOrderEditComponent implements OnInit {
 
     public resetEditForm(): void {
         this.resetUserCom();
-        this.editForm.reset({orderAmount: 0});
+        this.editForm.reset({orderAmount: 0, hasPayAmount: 0});
         this.addProductField();
     }
 
@@ -269,10 +282,10 @@ export class SellOrderEditComponent implements OnInit {
 
         for (let i = 0; i < productList.length; i++) {
             const control = new SellProduct(i, `sellProductList[${i}]_id`, `sellProductList[${i}]_productId`, `sellProductList[${i}]_productTitle`,
-                `sellProductList[${i}]_price`, `sellProductList[${i}]_number`, {});
+                `sellProductList[${i}]_productUnit`, `sellProductList[${i}]_price`, `sellProductList[${i}]_number`, {optionList: []});
             this.productArray.push(control);
             this.addProductControl(control, productList[i]);
-            this.loadMore(control, true, {productId: productList[i]['productId']});
+            control.selectData['optionList'].push({id: productList[i]['productId'], title: productList[i]["productTitle"]});
         }
     }
 
@@ -287,7 +300,7 @@ export class SellOrderEditComponent implements OnInit {
         const idx = (this.productArray.length > 0) ? this.productArray[this.productArray.length - 1].index + 1 : 0;
 
         const control = new SellProduct(idx, `sellProductList[${idx}]_id`, `sellProductList[${idx}]_productId`, `sellProductList[${idx}]_productTitle`,
-            `sellProductList[${idx}]_price`, `sellProductList[${idx}]_number`, {searchStr: '', optionList: []});
+            `sellProductList[${idx}]_productUnit`, `sellProductList[${idx}]_price`, `sellProductList[${idx}]_number`, {searchStr: '', optionList: []});
 
         const index = this.productArray.push(control);
 
@@ -301,10 +314,11 @@ export class SellOrderEditComponent implements OnInit {
      * @param control
      */
     addProductControl(control: SellProduct,
-                      values?: { id: number, productId: number, title: string, price: number, number: number }): void {
+                      values?: { id: number, productId: number, productTitle: string, productUnit: string, price: number, number: number }): void {
         this.editForm.addControl(control.idControl, new FormControl(values ? values['id'] : ''));
         this.editForm.addControl(control.productIdControl, new FormControl(values ? values['productId'] : '', Validators.required));
         this.editForm.addControl(control.titleControl, new FormControl(values ? values['productTitle'] : '', Validators.required));
+        this.editForm.addControl(control.unitControl, new FormControl(values ? values['productUnit'] : '', Validators.required));
         this.editForm.addControl(control.priceControl, new FormControl(values ? values['price'] : '', Validators.required));
         this.editForm.addControl(control.numberControl, new FormControl(values ? values['number'] : '', Validators.required));
     }
@@ -334,6 +348,7 @@ export class SellOrderEditComponent implements OnInit {
         this.editForm.removeControl(control.idControl);
         this.editForm.removeControl(control.productIdControl);
         this.editForm.removeControl(control.titleControl);
+        this.editForm.removeControl(control.unitControl);
         this.editForm.removeControl(control.priceControl);
         this.editForm.removeControl(control.numberControl);
     }
@@ -437,6 +452,7 @@ export class SellOrderEditComponent implements OnInit {
         console.log('productSelectChange', selectedProduct);
         this.editForm.controls[control.titleControl].setValue(selectedProduct['title']);
         this.editForm.controls[control.priceControl].setValue(selectedProduct['price']);
+        this.editForm.controls[control.unitControl].setValue(selectedProduct['productUnit']);
     }
 
     /**
@@ -523,15 +539,17 @@ export class SellProduct {
     idControl: string;
     productIdControl: string;
     titleControl: string;
+    unitControl: string;
     priceControl: string;
     numberControl: string;
     selectData: any;
 
-    constructor(index, idControl, productIdControl, titleControl, priceControl, numberControl, selectData) {
+    constructor(index, idControl, productIdControl, titleControl, unitControl, priceControl, numberControl, selectData) {
         this.index = index;
         this.idControl = idControl;
         this.productIdControl = productIdControl;
         this.titleControl = titleControl;
+        this.unitControl = unitControl
         this.priceControl = priceControl;
         this.numberControl = numberControl;
         this.selectData = selectData;
