@@ -14,7 +14,7 @@ import {CommonUtils} from "../../common/CommonUtils";
                         <input nz-input formControlName="userName" placeholder="买家名称">
                     </nz-input-group>
                     <nz-form-explain *ngIf="editForm.get('userName').dirty && editForm.get('userName').errors">
-                        请输入产品单位！
+                        请输入买家名称！
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
@@ -25,7 +25,7 @@ import {CommonUtils} from "../../common/CommonUtils";
                         <input nz-input formControlName="mobilePhone" placeholder="电话号码">
                     </nz-input-group>
                     <nz-form-explain *ngIf="editForm.get('mobilePhone').dirty && editForm.get('mobilePhone').errors">
-                        请输入产品单位！
+                        请输入电话号码！
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
@@ -38,7 +38,7 @@ import {CommonUtils} from "../../common/CommonUtils";
                         <input nz-input formControlName="address" placeholder="地址" style="width: 647px;">
                     </nz-input-group>
                     <nz-form-explain *ngIf="editForm.get('address').dirty && editForm.get('address').errors">
-                        请输入产品名称！
+                        请输入地址！
                     </nz-form-explain>
                 </nz-form-control>
             </nz-form-item>
@@ -48,7 +48,7 @@ import {CommonUtils} from "../../common/CommonUtils";
                 <nz-form-label nzFor="remark">备注</nz-form-label>
                 <nz-form-control>
                     <nz-input-group>
-                        <textarea nz-input formControlName="remark" placeholder="说明" style="width: 647px;"
+                        <textarea nz-input formControlName="remark" placeholder="备注" style="width: 647px;"
                                   [nzAutosize]="{minRows: 4, maxRows: 4}"></textarea>
                     </nz-input-group>
                 </nz-form-control>

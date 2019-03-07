@@ -17,16 +17,14 @@ export class ProductEchartsComponent implements OnInit {
     echartsInstance_1 = null;
 
     constructor(private productEchartsService: ProductEchartsService) {
-        let currentYear: any = formatDate(new Date(), 'yyyy', 'zh-Hans');
-        let timeLineData = new Array(currentYear - 4 + '', currentYear - 3 + '', currentYear - 2 + '', currentYear - 1 + '', currentYear);
-
+        let me = this;
         this.echarts_1.option = {
             timeline: {
                 data: [0, 1, 2, 3, 4],
                 type: 'number',
                 label: {
                     formatter: function (s) {
-                        return currentYear - s;
+                        return me.getYear(s);
                     }
                 },
                 autoPlay: true,
@@ -34,7 +32,7 @@ export class ProductEchartsComponent implements OnInit {
                 controlPosition: 'right'
             },
             options: [{
-                title : {'text':`1全国宏观经济指标`},
+                title : {'text':`${me.getYear(0)}年进销月度数据`},
                 tooltip: {
                     trigger: 'axis'
                 },
@@ -58,7 +56,7 @@ export class ProductEchartsComponent implements OnInit {
                 }],
                 yAxis: [{
                     type: 'value',
-                    name: '额度',
+                    name: '金额（元）',
                     axisLabel: {
                         formatter: '{value} ￥'
                     }
@@ -126,11 +124,8 @@ export class ProductEchartsComponent implements OnInit {
      * @param year
      */
     loadProductMonthData(index: number): void {
-        let num = this.echarts_1.option['timeline']['data'][index];
-        let currentYear: any = formatDate(new Date(), 'yyyy', 'zh-Hans');
-        let year = currentYear - num;
         let me = this;
-        this.productEchartsService.getProductMonthData(year).subscribe(res => {
+        this.productEchartsService.getProductMonthData(me.getYear(index)).subscribe(res => {
             if ("0000" == res['resultCode']) {
                 if (!me.echarts_1.option['options'][index]) {
                     me.echarts_1.option['options'][index] = {};
@@ -139,6 +134,7 @@ export class ProductEchartsComponent implements OnInit {
                     me.echarts_1.option['options'][index]['series'] =
                         new Array({data: []}, {data: []}, {data: []}, {data: []}, {data: []}, {data: []});
                 }
+                me.echarts_1.option['options'][index]['title'] = {'text':`${me.getYear(index)}年进销月度数据`},
                 me.echarts_1.option['options'][index]['series'][0]['data'] = res['result']['sumSellData'];
                 me.echarts_1.option['options'][index]['series'][1]['data'] = res['result']['sumStockData'];
                 me.echarts_1.option['options'][index]['series'][2]['data'] = res['result']['manureSellData'];
@@ -149,5 +145,14 @@ export class ProductEchartsComponent implements OnInit {
                 this.echartsInstance_1.setOption(this.echarts_1.option);
             }
         });
+    }
+
+    /**
+     * 根据下标获取年份，方便年份时间轴倒序
+     * @param index
+     */
+    getYear(index: number) {
+        let currentYear: any = formatDate(new Date(), 'yyyy', 'zh-Hans');
+        return currentYear - index;
     }
 }
