@@ -33,7 +33,7 @@
               "src/styles.css"
             ],
             "scripts": [
-//              "src/assets/js/bootstrap.js"
+              "node_modules/echarts/dist/echarts.min.js"
             ]
           },
           "configurations": {

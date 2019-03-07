@@ -122,9 +122,9 @@ export class ProductComponent implements OnInit {
 
     // 添加表单弹窗-确定
     addFormHandleOk(): void {
-        this.isAddFormOkLoading = true;
         if (this.productAddComponent.validForm()) {
             let params = this.productAddComponent.getValues();
+            this.isAddFormOkLoading = true;
             this.productService.saveProduct(params).pipe(
                 finalize(() => {
                     this.isAddFormOkLoading = false;

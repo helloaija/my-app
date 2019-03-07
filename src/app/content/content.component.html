@@ -1,68 +1,51 @@
 <nz-spin [nzSpinning]="isSpinning" nzTip="加载中...">
-<nz-layout class="layout">
-  <nz-header class="home-header">
-    <div class="home-logo"></div>
-    <div class="home-title">
-      <h1>亲亿家产品管理</h1>
-    </div>
-    <div class="home-opt">
-      欢迎您：<a>{{userInfo.userName}}</a>&nbsp;&nbsp;&nbsp;&nbsp;<a (click)="logout()">退出</a>
-    </div>
-  </nz-header>
-  <nz-layout>
-    <nz-sider [nzWidth]="200" style="background:#fff">
-        <ul nz-menu [nzMode]="'inline'" style="height:100%">
-            <view-left-menu [menuTree]="menuTree" (onItemClickEvent)="newTab($event)"></view-left-menu>
-        </ul>
+    <nz-layout class="layout">
+        <nz-header class="home-header">
+            <div class="home-logo"></div>
+            <div class="home-title">
+                <h1>亲亿家产品管理</h1>
+            </div>
+            <div class="home-opt">
+                欢迎您：<a>{{userInfo.userName}}</a>&nbsp;&nbsp;&nbsp;&nbsp;<a (click)="logout()">退出</a>
+            </div>
+        </nz-header>
+        <nz-layout>
+            <nz-sider [nzWidth]="200" style="background:#fff">
+                <ul nz-menu [nzMode]="'inline'" style="height:100%">
+                    <view-left-menu [menuTree]="menuTree" (onItemClickEvent)="newTab($event)"></view-left-menu>
+                </ul>
+            </nz-sider>
+            <nz-layout style="padding:0 5px 5px">
+                <nz-content style="background:#fff; padding: 5px; min-height: 280px;">
+                    <nz-tabset [nzType]="'card'" [(nzSelectedIndex)]="selectedIndex">
+                        <nz-tab *ngFor="let tab of tabs; let i = index" [nzTitle]="titleTemplate">
+                            <ng-template #titleTemplate>
+                                <div>
+                                    {{ tab }}
+                                    <i nz-icon *ngIf="i != 0" type="close" (click)="closeTab(tab)"
+                                       class="ant-tabs-close-x"></i>
+                                </div>
+                            </ng-template>
+                            <view-content-index *ngIf="tab == '首页'"></view-content-index>
 
-      <!--<ul nz-menu [nzMode]="'inline'" style="height:100%">-->
-        <!--<li nz-submenu>-->
-          <!--<span title><i nz-icon type="shop"></i>业务管理</span>-->
-          <!--<ul>-->
-            <!--<li nz-menu-item (click)="newTab('产品管理')">产品管理</li>-->
-            <!--<li nz-menu-item (click)="newTab('库存数据')">库存数据</li>-->
-            <!--<li nz-menu-item (click)="newTab('进货单')">进货单</li>-->
-            <!--<li nz-menu-item (click)="newTab('销售单')">销售单</li>-->
-          <!--</ul>-->
-        <!--</li>-->
-        <!--<li nz-submenu>-->
-          <!--<span title><i nz-icon type="setting"></i>系统管理</span>-->
-          <!--<ul>-->
-            <!--<li nz-menu-item (click)="newTab('菜单管理')">菜单管理</li>-->
-            <!--<li nz-menu-item (click)="newTab('角色管理')">角色管理</li>-->
-            <!--<li nz-menu-item (click)="newTab('用户管理')">用户管理</li>-->
-          <!--</ul>-->
-        <!--</li>-->
-      <!--</ul>-->
-    </nz-sider>
-    <nz-layout style="padding:0 5px 5px">
-      <nz-content style="background:#fff; padding: 5px; min-height: 280px;">
-        <nz-tabset [nzType]="'card'" [(nzSelectedIndex)]="selectedIndex">
-          <nz-tab *ngFor="let tab of tabs; let i = index" [nzTitle]="titleTemplate">
-            <ng-template #titleTemplate >
-              <div>
-                {{ tab }}
-                <i nz-icon *ngIf="i != 0" type="close" (click)="closeTab(tab)" class="ant-tabs-close-x"></i>
-              </div>
-            </ng-template>
-            <view-content-index *ngIf="tab == '首页'"></view-content-index>
+                            <view-product *ngIf="tab == '产品管理'"></view-product>
+                            <view-store *ngIf="tab == '库存数据'"></view-store>
+                            <view-stockOrder *ngIf="tab == '进货单'"></view-stockOrder>
+                            <view-sellOrder *ngIf="tab == '销售单'"></view-sellOrder>
+                            <view-buyer *ngIf="tab == '买家信息'"></view-buyer>
 
-            <view-product *ngIf="tab == '产品管理'"></view-product>
-            <view-store *ngIf="tab == '库存数据'"></view-store>
-            <view-stockOrder *ngIf="tab == '进货单'"></view-stockOrder>
-            <view-sellOrder *ngIf="tab == '销售单'"></view-sellOrder>
-            <view-buyer *ngIf="tab == '买家信息'"></view-buyer>
+                            <view-user-manage *ngIf="tab == '用户管理'"></view-user-manage>
+                            <view-menu-manage *ngIf="tab == '菜单管理'"></view-menu-manage>
+                            <view-role-manage *ngIf="tab == '角色管理'"></view-role-manage>
 
-            <view-user-manage *ngIf="tab == '用户管理'"></view-user-manage>
-            <view-menu-manage *ngIf="tab == '菜单管理'"></view-menu-manage>
-            <view-role-manage *ngIf="tab == '角色管理'"></view-role-manage>
-
-            <view-stat-user-bill *ngIf="tab == '买家账单金额统计'"></view-stat-user-bill>
-            <view-stat-sell-product-month *ngIf="tab == '销售产品按月统计'"></view-stat-sell-product-month>
-          </nz-tab>
-        </nz-tabset>
-      </nz-content>
+                            <view-stat-user-bill *ngIf="tab == '买家账单金额统计'"></view-stat-user-bill>
+                            <view-stat-sell-product-month *ngIf="tab == '销售产品按月统计'"></view-stat-sell-product-month>
+                            <view-stat-stock-product-month *ngIf="tab == '进货产品按月统计'"></view-stat-stock-product-month>
+                            <view-stat-product-echarts *ngIf="tab == '进销图表统计'"></view-stat-product-echarts>
+                        </nz-tab>
+                    </nz-tabset>
+                </nz-content>
+            </nz-layout>
+        </nz-layout>
     </nz-layout>
-  </nz-layout>
-</nz-layout>
 </nz-spin>

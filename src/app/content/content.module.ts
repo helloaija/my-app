@@ -18,6 +18,8 @@ import {LeftMenuComponent} from "./leftMenu.component";
 import {BuyerModule} from "../biz/buyer/buyer.module";
 import {UserBillModule} from '../statistics/userBill/userBill.module';
 import {SellProductMonthModule} from "../statistics/sellProductMonth/sellProductMonth.module";
+import {StockProductMonthModule} from "../statistics/stockProductMonth/stockProductMonth.module";
+import {ProductEchartsModule} from "../statistics/productEcharts/productEcharts.module";
 
 
 @NgModule({
@@ -35,7 +37,9 @@ import {SellProductMonthModule} from "../statistics/sellProductMonth/sellProduct
         SellOrderModule,
         BuyerModule,
         UserBillModule,
-        SellProductMonthModule
+        SellProductMonthModule,
+        StockProductMonthModule,
+        ProductEchartsModule
     ],
     declarations: [
         ContentComponent, ContentIndexComponent, LeftMenuComponent

@@ -2,16 +2,16 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {finalize} from 'rxjs/operators';
 import {CommonUtils} from '../../common/CommonUtils';
-import {SellProductMonthService} from "./sellProductMonth.service";
+import {StockProductMonthService} from "./stockProductMonth.service";
 import {formatDate} from "@angular/common";
 
 @Component({
-    selector: 'view-stat-sell-product-month',
-    templateUrl: './sellProductMonth.component.html',
-    styleUrls: ['./sellProductMonth.component.less']
+    selector: 'view-stat-stock-product-month',
+    templateUrl: './stockProductMonth.component.html',
+    styleUrls: ['./stockProductMonth.component.less']
 })
 
-export class SellProductMonthComponent implements OnInit {
+export class StockProductMonthComponent implements OnInit {
     // 查询框
     queryForm: FormGroup;
 
@@ -23,14 +23,13 @@ export class SellProductMonthComponent implements OnInit {
         dataSet: [],
         loading: true,
         filterParams: {},
-        totalSellPrice: 0,
         totalStockPrice: 0
     };
 
     // 遮罩
     isSpinning = false;
 
-    constructor(private sellProductMonthService: SellProductMonthService, private commonUtils: CommonUtils, private fb: FormBuilder) {
+    constructor(private stockProductMonthService: StockProductMonthService, private commonUtils: CommonUtils, private fb: FormBuilder) {
         this.queryForm = this.fb.group({
             year: [formatDate(new Date(), 'yyyy', 'zh-Hans'), []],
             month: [formatDate(new Date(), 'MM', 'zh-Hans'), []]
@@ -61,7 +60,7 @@ export class SellProductMonthComponent implements OnInit {
         this.table.filterParams['pageSize'] = this.table.pageSize;
 
         // 请求产品数据
-        this.sellProductMonthService.getSellProductMonths(this.table.filterParams).pipe(
+        this.stockProductMonthService.getStockProductMonths(this.table.filterParams).pipe(
             finalize(() => {
                 this.table.loading = false;
             })
@@ -69,7 +68,6 @@ export class SellProductMonthComponent implements OnInit {
             this.table.loading = false;
             if ('0000' == data['resultCode']) {
                 let result = data['result'];
-                this.table.totalSellPrice = result['totalSellPrice'];
                 this.table.totalStockPrice = result['totalStockPrice'];
                 this.table.total = result['pageBean']['totalCount'];
                 this.table.dataSet = result['pageBean']['recordList'] ? result['pageBean']['recordList'] : [];
