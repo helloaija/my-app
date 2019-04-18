@@ -135,12 +135,27 @@ import {SellOrderService} from './sellOrder.service';
                     <nz-form-label class="product-label">单位</nz-form-label>
                     <nz-form-control>
                         <input nz-input [formControlName]="control.unitControl"
-                               style="width: 65px;border: none;" disabled>
+                               style="width: 50px;border: none;" disabled>
+                    </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                    <nz-form-label class="product-label" [nzFor]="control.stockPriceControl" nzRequired>进价</nz-form-label>
+                    <nz-form-control>
+                        <nz-select [formControlName]="control.stockPriceControl"
+                                   style="width: 100px;">
+                            <nz-option *ngFor="let stockPrice of control.stockPriceOptionList" [nzValue]="stockPrice"
+                                       [nzLabel]="stockPrice"></nz-option>
+                        </nz-select>
+                        <nz-form-explain
+                                *ngIf="editForm.get(control.stockPriceControl).dirty && editForm.get(control.stockPriceControl).errors">
+                            请选择进价！
+                        </nz-form-explain>
                     </nz-form-control>
                 </nz-form-item>
                 
                 <nz-form-item>
-                    <nz-form-label class="product-label" [nzFor]="control.priceControl" nzRequired>单价</nz-form-label>
+                    <nz-form-label class="product-label" [nzFor]="control.priceControl" nzRequired>售价</nz-form-label>
                     <nz-form-control>
                         <nz-input-number [formControlName]="control.priceControl" [nzMin]="0" [nzMax]="99999"
                                          [nzStep]="0.1"
@@ -160,7 +175,7 @@ import {SellOrderService} from './sellOrder.service';
                         <nz-input-number [formControlName]="control.numberControl" [nzMin]="0" [nzMax]="999"
                                          [nzStep]="1"
                                          [nzPlaceHolder]="'请填写数量'" [nzPrecision]="0" [nzDisabled]="false"
-                                         [attr.id]="control.index" (ngModelChange)="calcOrderAmount()" style="width: 100px;">
+                                         [attr.id]="control.index" (ngModelChange)="calcOrderAmount()" style="width: 60px;">
                         </nz-input-number>
                         <i nz-icon type="minus-circle-o" class="dynamic-delete-button"
                            (click)="removeProductField(control, $event)"
@@ -282,10 +297,12 @@ export class SellOrderEditComponent implements OnInit {
 
         for (let i = 0; i < productList.length; i++) {
             const control = new SellProduct(i, `sellProductList[${i}]_id`, `sellProductList[${i}]_productId`, `sellProductList[${i}]_productTitle`,
-                `sellProductList[${i}]_productUnit`, `sellProductList[${i}]_price`, `sellProductList[${i}]_number`, {optionList: []});
+                `sellProductList[${i}]_productUnit`, `sellProductList[${i}]_stockPrice`, `sellProductList[${i}]_price`, `sellProductList[${i}]_number`,
+                {optionList: []}, []);
             this.productArray.push(control);
             this.addProductControl(control, productList[i]);
             control.selectData['optionList'].push({id: productList[i]['productId'], title: productList[i]["productTitle"]});
+            control.stockPriceOptionList.push(productList[i]['stockPrice']);
         }
     }
 
@@ -300,7 +317,8 @@ export class SellOrderEditComponent implements OnInit {
         const idx = (this.productArray.length > 0) ? this.productArray[this.productArray.length - 1].index + 1 : 0;
 
         const control = new SellProduct(idx, `sellProductList[${idx}]_id`, `sellProductList[${idx}]_productId`, `sellProductList[${idx}]_productTitle`,
-            `sellProductList[${idx}]_productUnit`, `sellProductList[${idx}]_price`, `sellProductList[${idx}]_number`, {searchStr: '', optionList: []});
+            `sellProductList[${idx}]_productUnit`, `sellProductList[${idx}]_stockPrice`, `sellProductList[${idx}]_price`, `sellProductList[${idx}]_number`,
+            {searchStr: '', optionList: []}, []);
 
         const index = this.productArray.push(control);
 
@@ -321,6 +339,7 @@ export class SellOrderEditComponent implements OnInit {
         this.editForm.addControl(control.unitControl, new FormControl(values ? values['productUnit'] : '', Validators.required));
         this.editForm.addControl(control.priceControl, new FormControl(values ? values['price'] : '', Validators.required));
         this.editForm.addControl(control.numberControl, new FormControl(values ? values['number'] : '', Validators.required));
+        this.editForm.addControl(control.stockPriceControl, new FormControl(values ? values['stockPrice'] : '', Validators.required));
     }
 
     /**
@@ -351,6 +370,7 @@ export class SellOrderEditComponent implements OnInit {
         this.editForm.removeControl(control.unitControl);
         this.editForm.removeControl(control.priceControl);
         this.editForm.removeControl(control.numberControl);
+        this.editForm.removeControl(control.stockPriceControl);
     }
 
     clearProductField(): void {
@@ -388,7 +408,7 @@ export class SellOrderEditComponent implements OnInit {
         }
 
         control.selectData['isLoading'] = true;
-        this.sellOrderService.getProducts(params).subscribe(data => {
+        this.sellOrderService.getProductInfos(params).subscribe(data => {
             control.selectData['isLoading'] = false;
             if (data['result']['recordList'] == null) {
                 data['result']['recordList'] = [];
@@ -453,6 +473,12 @@ export class SellOrderEditComponent implements OnInit {
         this.editForm.controls[control.titleControl].setValue(selectedProduct['title']);
         this.editForm.controls[control.priceControl].setValue(selectedProduct['price']);
         this.editForm.controls[control.unitControl].setValue(selectedProduct['productUnit']);
+        this.editForm.controls[control.numberControl].setValue(1);
+        // 加载进货价格选项
+        control.stockPriceOptionList = selectedProduct['stockPrices'];
+        if (selectedProduct['stockPrices'] && selectedProduct['stockPrices'].length > 0) {
+            this.editForm.controls[control.stockPriceControl].setValue(selectedProduct['stockPrices'][0]);
+        }
     }
 
     /**
@@ -540,18 +566,23 @@ export class SellProduct {
     productIdControl: string;
     titleControl: string;
     unitControl: string;
+    stockPriceControl: string;
     priceControl: string;
     numberControl: string;
     selectData: any;
+    stockPriceOptionList: Array<number>;
 
-    constructor(index, idControl, productIdControl, titleControl, unitControl, priceControl, numberControl, selectData) {
+    constructor(index, idControl, productIdControl, titleControl, unitControl, stockPriceControl, priceControl,
+                numberControl, selectData, stockPriceOptionList) {
         this.index = index;
         this.idControl = idControl;
         this.productIdControl = productIdControl;
         this.titleControl = titleControl;
         this.unitControl = unitControl
+        this.stockPriceControl = stockPriceControl;
         this.priceControl = priceControl;
         this.numberControl = numberControl;
         this.selectData = selectData;
+        this.stockPriceOptionList = stockPriceOptionList;
     }
 }

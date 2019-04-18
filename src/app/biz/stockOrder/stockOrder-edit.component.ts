@@ -411,7 +411,7 @@ export class StockOrderEditComponent implements OnInit {
         }
 
         control.selectData['isLoading'] = true;
-        this.stockOrderService.getProducts(params).subscribe(data => {
+        this.stockOrderService.getProductInfos(params).subscribe(data => {
             control.selectData['isLoading'] = false;
             if (data['result']['recordList'] == null) {
                 data['result']['recordList'] = [];
@@ -475,7 +475,11 @@ export class StockOrderEditComponent implements OnInit {
         console.log('productSelectChange', selectedProduct);
         this.editForm.controls[control.titleControl].setValue(selectedProduct['title']);
         this.editForm.controls[control.unitControl].setValue(selectedProduct['productUnit']);
-        this.editForm.controls[control.priceControl].setValue(selectedProduct['price']);
+        if (selectedProduct['stockPrices'] && selectedProduct['stockPrices'].length > 0) {
+            this.editForm.controls[control.priceControl].setValue(selectedProduct['stockPrices'][0]);
+        } else {
+            this.editForm.controls[control.priceControl].setValue(selectedProduct['price']);
+        }
     }
 
     /**

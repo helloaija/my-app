@@ -11,6 +11,7 @@ export class StockOrderService {
     updateStockOrderUrl = '/admin/stockOrder/updateStockOrder';
     deleteStockOrderUrl = '/admin/stockOrder/deleteStockOrder';
     listProductUrl = "/admin/product/listProductPage";
+    listProductInfoUrl = "/admin/stockOrder/listProductStockInfo";
 
     getStockOrders(params): Observable<Object> {
         return this.http.get(`${this.listStockOrderUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
@@ -35,6 +36,10 @@ export class StockOrderService {
 
     getProducts(params): Observable<Object> {
         return this.http.get(`${this.listProductUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
+    }
+
+    getProductInfos(params): Observable<Object> {
+        return this.http.get(`${this.listProductInfoUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});
     }
 
     constructor(private http: HttpClient) {

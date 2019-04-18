@@ -243,6 +243,32 @@ export class SellOrderComponent implements OnInit {
             }
         });
     }
+
+    /**
+     * 计算订单利润
+     * @param data
+     */
+    calcOrderProfit(data): number {
+        let records = data['sellProductList'];
+        if (!records || records.length == 0) {
+            return 0;
+        }
+
+        let totalProfit = 0;
+        for (let i = 0; i < records.length; i ++) {
+            totalProfit += this.calcProductProfit(records[i]);
+        }
+
+        return totalProfit;
+    }
+
+    /**
+     * 计算产品利润
+     * @param record
+     */
+    calcProductProfit(record): number {
+        return (record.price - record.stockPrice) * record.number;
+    }
 }
 
 @Pipe({name: 'sellOrderStatusType'})

@@ -91,6 +91,7 @@
             <th nzWidth="130px">订单编号</th>
             <th nzWidth="100px">订单价格</th>
             <th nzWidth="100px">已支付金额</th>
+            <th nzWidth="100px">利润</th>
             <th nzWidth="100px">订单状态</th>
             <th nzWidth="150px">买家名称</th>
             <th nzWidth="150px">买家电话</th>
@@ -108,6 +109,7 @@
                 <td>{{data.orderNumber}}</td>
                 <td class="text-right">{{data.orderAmount | currency:'￥'}}</td>
                 <td class="text-right">{{data.hasPayAmount | currency:'￥'}}</td>
+                <td class="text-right">{{calcOrderProfit(data) | currency:'￥'}}</td>
                 <td>{{data.orderStatus | sellOrderStatusType}}</td>
                 <td>{{data.userName}}</td>
                 <td>{{data.mobilePhone}}</td>
@@ -120,11 +122,15 @@
             </tr>
             <tr [nzExpand]="data.expand" *ngFor="let product of data.sellProductList; index as pi">
                 <td class="exp-emp" colspan="2" style="border-right: none;"></td>
-                <td class="exp-noemp" colspan="2" style="border-right: none;">({{pi + 1}})&nbsp;&nbsp;{{product.productTitle}}</td>
-                <td class="exp-noemp text-right" colspan="2" style="border-right: none;">单价：{{product.price | currency:'￥'}}</td>
-                <td class="exp-noemp text-right" colspan="1" style="border-right: none;">数量：{{product.number}}</td>
-                <td class="exp-noemp" colspan="1" style="border-right: none;">{{product.productUnit}}</td>
-                <td class="exp-emp" colspan="4"></td>
+                <td class="exp-noemp" colspan="9" style="border-right: none;">
+                    <label style="width: 200px;">({{pi + 1}})&nbsp;&nbsp;{{product.productTitle}}</label>
+                    <label style="width: 160px; text-align: right;">进价：{{product.stockPrice | currency:'￥'}}</label>
+                    <label style="width: 160px; text-align: right;">售价：{{product.price | currency:'￥'}}</label>
+                    <label style="width: 160px; text-align: right;">数量({{product.productUnit}})：{{product.number}}</label>
+                    <label style="width: 160px; text-align: right;">总售价：{{product.price * product.number | currency:'￥'}}</label>
+                    <label style="width: 160px; text-align: right;">总利润：{{calcProductProfit(product) | currency:'￥'}}</label>
+                </td>
+                <td class="exp-emp" colspan="2"></td>
             </tr>
         </ng-template>
         <tr>
@@ -140,7 +146,7 @@
     <!--添加表单-->
     <nz-modal [(nzVisible)]="editModel.isVisible" [nzTitle]="editModel.title" nzKeyboard="false" nzMaskClosable="false"
               (nzOnCancel)="editFormHandleCancel()" (nzOnOk)="editFormHandleOk()" [nzOkLoading]="editModel.isOkLoading"
-              nzWidth="865px">
+              nzWidth="950px">
         <view-sell-order-edit #sellEditComponent></view-sell-order-edit>
     </nz-modal>
 </nz-spin>
