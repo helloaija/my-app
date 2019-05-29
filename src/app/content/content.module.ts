@@ -20,6 +20,7 @@ import {UserBillModule} from '../statistics/userBill/userBill.module';
 import {SellProductMonthModule} from "../statistics/sellProductMonth/sellProductMonth.module";
 import {StockProductMonthModule} from "../statistics/stockProductMonth/stockProductMonth.module";
 import {ProductEchartsModule} from "../statistics/productEcharts/productEcharts.module";
+import {SellProductDetailedListModule} from "../statistics/sellProductDetailedList/sellProductDetailedList.module";
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import {ProductEchartsModule} from "../statistics/productEcharts/productEcharts.
         UserBillModule,
         SellProductMonthModule,
         StockProductMonthModule,
-        ProductEchartsModule
+        ProductEchartsModule,
+        SellProductDetailedListModule
     ],
     declarations: [
         ContentComponent, ContentIndexComponent, LeftMenuComponent
