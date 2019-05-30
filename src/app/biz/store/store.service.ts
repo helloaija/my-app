@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 
 @Injectable()
 export class StoreService {
-    listProductUrl = "/admin/product/listProductPage";
+    listProductUrl = "/admin/product/listStoreDetail";
 
     getProducts(params): Observable<Object> {
         return this.http.get(`${this.listProductUrl}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}, params : params});

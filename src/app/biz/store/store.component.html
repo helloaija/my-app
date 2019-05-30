@@ -36,13 +36,14 @@
     <tr>
         <th nzWidth="45px">序号</th>
         <th nzWidth="350px">产品名称</th>
-        <th nzWidth="100px">价格(元)</th>
-        <th nzWidth="80px">产品类型</th>
-        <th nzWidth="65px">单位</th>
-        <th nzWidth="85px">剩余数量</th>
-        <th nzWidth="85px">已售数量</th>
-        <th nzWidth="90px">总数量</th>
-        <th nzWidth="160px">创建时间</th>
+        <th class="text-right" nzWidth="100px">预售价(元)</th>
+        <th class="text-center" nzWidth="80px">产品类型</th>
+        <th class="text-center" nzWidth="65px">单位</th>
+        <th class="text-right" nzWidth="85px">剩余数量</th>
+        <th class="text-right" nzWidth="100px">最后进价(元)</th>
+        <th class="text-right" nzWidth="85px">已售数量</th>
+        <th class="text-right" nzWidth="90px">总数量</th>
+        <th class="text-center" nzWidth="160px">创建时间</th>
         <th>产品说明</th>
     </tr>
     </thead>
@@ -54,10 +55,18 @@
         <td class="text-center">{{data.productType | productType}}</td>
         <td class="text-center">{{data.productUnit}}</td>
         <td class="text-right">{{data.number}}</td>
+        <td class="text-right">{{(data.stockPrice ? data.stockPrice : 0) | currency:'￥'}}</td>
         <td class="text-right">{{data.soldNumber}}</td>
         <td class="text-right">{{data.number + data.soldNumber}}</td>
         <td class="text-center">{{data.createTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
         <td>{{data.remark}}</td>
+    </tr>
+    <tr>
+        <td colspan="11" class="text-center">
+            库存总额：{{table.storeAmount | currency:'￥'}}&nbsp;&nbsp;&nbsp;&nbsp;
+            有库存产品数量：{{table.hasStoreNum}}&nbsp;&nbsp;&nbsp;&nbsp;
+            无库存产品数量：{{table.noStoreNum}}
+        </td>
     </tr>
     </tbody>
 </nz-table>

@@ -22,7 +22,13 @@ export class StoreComponent implements OnInit {
         total: 1,
         dataSet: [],
         loading: true,
-        filterParams: {}
+        filterParams: {},
+        // 库存总值
+        storeAmount: 0,
+        // 库存不为0数量
+        hasStoreNum: 0,
+        // 库存为0数量
+        noStoreNum:0
     };
 
     // 遮罩
@@ -79,9 +85,17 @@ export class StoreComponent implements OnInit {
         ).subscribe(data => {
             this.table.loading = false;
             if ('0000' == data['resultCode']) {
-                let result = data['result'];
-                this.table.total = result['totalCount'];
-                this.table.dataSet = result['recordList'] ? result['recordList'] : [];
+                // 库存总值
+                this.table.storeAmount = data['result']['storeAmount'] ? data['result']['storeAmount'] : 0;
+                // 库存不为0数量
+                this.table.hasStoreNum = data['result']['hasStoreNum'] ? data['result']['hasStoreNum'] : 0;
+                // 库存为0数量
+                this.table.noStoreNum = data['result']['noStoreNum'] ? data['result']['noStoreNum'] : 0;
+
+                // table列表数据
+                let pageBean = data['result']['pageBean'];
+                this.table.total = pageBean['totalCount'];
+                this.table.dataSet = pageBean['recordList'] ? pageBean['recordList'] : [];
             }
         });
     }
