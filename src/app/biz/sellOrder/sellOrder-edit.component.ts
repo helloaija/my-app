@@ -227,7 +227,6 @@ export class SellOrderEditComponent implements OnInit {
     }
 
     public validForm(): boolean {
-
         for (const i in this.editForm.controls) {
             this.editForm.controls[i].markAsDirty();
             this.editForm.controls[i].updateValueAndValidity();
@@ -401,6 +400,7 @@ export class SellOrderEditComponent implements OnInit {
         }
 
         let params = {currentPage: control.selectData['pageIndex']};
+        params['userId'] = this.editForm.controls['userId'].value;
 
         if (filterParams) {
             params['title'] = filterParams['productTitle'] ? filterParams['productTitle'] : '';
