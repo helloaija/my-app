@@ -27,7 +27,8 @@ export class SellOrderComponent implements OnInit {
         operationOrder: null,
         filterParams: {},
         totalHasPayAmount: 0,
-        totalOrderAmount: 0
+        totalOrderAmount: 0,
+        totalProfitAmount: 0
     };
 
     // 遮罩
@@ -116,6 +117,8 @@ export class SellOrderComponent implements OnInit {
                 this.table.dataSet = result['pageBean']['recordList'] ? result['pageBean']['recordList'] : [];
                 this.table.totalOrderAmount = result['totalOrderAmount'] ? result['totalOrderAmount'] : 0;
                 this.table.totalHasPayAmount = result['totalHasPayAmount'] ? result['totalHasPayAmount'] : 0;
+                this.table.totalProfitAmount = result['totalProfitAmount'] ? result['totalProfitAmount'] : 0;
+
             }
         });
     }

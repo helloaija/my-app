@@ -137,7 +137,8 @@
             <td colspan="12" class="text-center">
                 订单总额：{{table.totalOrderAmount | currency:'￥'}}&nbsp;&nbsp;&nbsp;&nbsp;
                 支付总额：{{table.totalHasPayAmount | currency:'￥'}}&nbsp;&nbsp;&nbsp;&nbsp;
-                未支付总额：{{table.totalOrderAmount - table.totalHasPayAmount | currency:'￥'}}
+                未支付总额：{{table.totalOrderAmount - table.totalHasPayAmount | currency:'￥'}}&nbsp;&nbsp;&nbsp;&nbsp;
+                利润总额：{{table.totalProfitAmount | currency:'￥'}}
             </td>
         </tr>
         </tbody>
