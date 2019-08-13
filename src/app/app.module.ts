@@ -25,8 +25,7 @@ registerLocaleData(zh);
         NgZorroAntdModule,
         HttpClientModule,
         BrowserAnimationsModule,
-        ReactiveFormsModule,
-        DataChartModule
+        ReactiveFormsModule
     ],
     declarations: [
         AppComponent,
