@@ -55,7 +55,8 @@ export class StockOrderComponent implements OnInit {
             orderNumber: ['', []],
             orderStatus: ['', []],
             createTimeBegin: ['', []],
-            createTimeEnd: ['', []]
+            createTimeEnd: ['', []],
+            supplierName: ['', []]
         });
     }
 

@@ -12,7 +12,6 @@ import {registerLocaleData} from '@angular/common';
 import zh from '@angular/common/locales/zh';
 import {AuthInterceptor} from './AuthInterceptor';
 import {CommonUtils} from './common/CommonUtils';
-import {DataChartModule} from "./mobile/dataChart/dataChart.module";
 
 
 registerLocaleData(zh);

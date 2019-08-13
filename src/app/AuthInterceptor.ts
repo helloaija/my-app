@@ -9,13 +9,12 @@ import {NzMessageService} from 'ng-zorro-antd';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-    constructor(private commonServie: CommonService,
-                private router: Router,
+    constructor(private router: Router,
                 private messageBar: NzMessageService) {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        let authToken = this.commonServie.getJwtToken();
+        let authToken = CommonService.getJwtToken();
 
         let authReq = req;
         // let authReq = req.clone({

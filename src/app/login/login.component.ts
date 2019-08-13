@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
         this.loginService.doLogin(username, password, validCode).subscribe(res => {
             if ('0000' == res['resultCode']) {
                 // 保存token
-                this.commonServie.setJwtToken(res['result']);
+                CommonService.setJwtToken(res['result']);
                 this.router.navigateByUrl("content");
             } else {
                 this.messageBar.create('error', res['resultMessage']);
@@ -52,8 +52,7 @@ export class LoginComponent implements OnInit {
     constructor(private fb: FormBuilder,
                 private router: Router,
                 private loginService: LoginService,
-                private messageBar: NzMessageService,
-                private commonServie: CommonService) {
+                private messageBar: NzMessageService) {
     }
 
     ngOnInit(): void {

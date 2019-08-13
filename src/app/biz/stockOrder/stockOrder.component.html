@@ -17,6 +17,13 @@
             </nz-form-control>
         </nz-form-item>
 
+        <nz-form-item style="margin: auto;">
+            <nz-form-label nzFor="supplierName">供应商名称</nz-form-label>
+            <nz-form-control>
+                <input nz-input placeholder="供应商名称" formControlName="supplierName">
+            </nz-form-control>
+        </nz-form-item>
+
         <br/>
 
         <nz-form-item style="margin: auto;">
@@ -34,7 +41,8 @@
                                 formControlName="createTimeEnd" [nzStyle]="{width: '165px'}"></nz-date-picker>
             </nz-form-control>
         </nz-form-item>
-        <nz-form-item style="margin: auto;">
+
+        <nz-form-item style="margin: auto;margin-left: 285px;">
             <div class="queryFormBtn">
                 <button nz-button (click)="query()">查询</button>
                 <button nz-button (click)="resetForm()">清除</button>

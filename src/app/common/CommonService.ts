@@ -5,11 +5,11 @@ export class CommonService {
     constructor() {
     }
 
-    getJwtToken(): string {
+    static getJwtToken(): string {
         return localStorage.getItem("jwtToken");
     }
 
-    setJwtToken(jt: string): void {
+    static setJwtToken(jt: string): void {
         localStorage.setItem("jwtToken", jt);
     }
 }
