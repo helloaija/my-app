@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {NgModule, Type} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProductRoutingModule} from './product-routing.module';
@@ -23,4 +23,5 @@ import {ProductEditComponent} from "./product-edit.component";
     providers: [ProductService]
 })
 export class ProductManageModule {
+    mainConponent: Type<any> = ProductComponent;
 }

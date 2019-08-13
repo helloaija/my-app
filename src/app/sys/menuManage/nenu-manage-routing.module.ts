@@ -4,7 +4,7 @@ import {MenuManageComponent} from "./nenu-manage.component";
 
 
 const userManageRoutes: Routes = [
-  {path: 'menu-manage', component: MenuManageComponent}
+  {path: '', component: MenuManageComponent}
 ];
 
 @NgModule({

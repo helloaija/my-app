@@ -18,31 +18,17 @@
             <nz-layout style="padding:0 5px 5px">
                 <nz-content style="background:#fff; padding: 5px; min-height: 280px;">
                     <nz-tabset [nzType]="'card'" [(nzSelectedIndex)]="selectedIndex">
-                        <nz-tab *ngFor="let tab of tabs; let i = index" [nzTitle]="titleTemplate">
+                        <nz-tab *ngFor="let tab of tabs; let i = index" [nzTitle]="titleTemplate" [nzForceRender]="false">
                             <ng-template #titleTemplate>
                                 <div>
-                                    {{ tab }}
-                                    <i nz-icon *ngIf="i != 0" type="close" (click)="closeTab(tab)"
+                                    {{ tab.title }}
+                                    <i nz-icon *ngIf="i != 0" type="close" (click)="closeTab(tab.title)"
                                        class="ant-tabs-close-x"></i>
                                 </div>
                             </ng-template>
-                            <view-content-index *ngIf="tab == '首页'"></view-content-index>
 
-                            <view-product *ngIf="tab == '产品管理'"></view-product>
-                            <view-store *ngIf="tab == '库存数据'"></view-store>
-                            <view-stockOrder *ngIf="tab == '进货单'"></view-stockOrder>
-                            <view-sellOrder *ngIf="tab == '销售单'"></view-sellOrder>
-                            <view-buyer *ngIf="tab == '买家信息'"></view-buyer>
-
-                            <view-user-manage *ngIf="tab == '用户管理'"></view-user-manage>
-                            <view-menu-manage *ngIf="tab == '菜单管理'"></view-menu-manage>
-                            <view-role-manage *ngIf="tab == '角色管理'"></view-role-manage>
-
-                            <view-stat-user-bill *ngIf="tab == '买家账单金额统计'"></view-stat-user-bill>
-                            <view-stat-sell-product-month *ngIf="tab == '销售产品按月统计'"></view-stat-sell-product-month>
-                            <view-stat-stock-product-month *ngIf="tab == '进货产品按月统计'"></view-stat-stock-product-month>
-                            <view-stat-product-echarts *ngIf="tab == '进销图表统计'"></view-stat-product-echarts>
-                            <view-stat-sell_product_detailed *ngIf="tab == '销售产品明细列表'"></view-stat-sell_product_detailed>
+                            <view-content-index *ngIf="tab.title == '首页'"></view-content-index>
+                            <view-content-tab *ngIf="tab.title != '首页'" [modulePath]="menuMap.get(tab.title)"></view-content-tab>
                         </nz-tab>
                     </nz-tabset>
                 </nz-content>

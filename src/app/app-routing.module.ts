@@ -1,18 +1,23 @@
 import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {PageNotFoundComponent} from './common/404/page-not-found.component';
 
 const appRoutes: Routes = [
     {path: '', redirectTo: '/toLogin', pathMatch: 'full'},
-    {path: 'toLogin', redirectTo: '/toLogin', pathMatch: 'full'},
-    {path: '404', component: PageNotFoundComponent}
+    {path: 'toLogin', loadChildren: './login/login.module#LoginModule'},
+    {path: 'content', loadChildren: './content/content.module#ContentModule'}
 ];
 
 @NgModule({
     imports: [
         RouterModule.forRoot(
             appRoutes,
-            {enableTracing: true} // <-- debugging purposes only
+            {
+                // debugging purposes only
+                enableTracing: true,
+                // 预加载模块
+                // preloadingStrategy: PreloadAllModules
+            }
         )
     ],
     exports: [

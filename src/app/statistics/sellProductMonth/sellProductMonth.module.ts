@@ -1,16 +1,18 @@
-import {NgModule} from '@angular/core';
+import {NgModule, Type} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgZorroAntdModule} from 'ng-zorro-antd';
 import {SellProductMonthComponent} from './sellProductMonth.component';
 import {SellProductMonthService} from './sellProductMonth.service';
+import {SellProductMonthRoutingModule} from "./sellProductMonth-routing.module";
 
 @NgModule({
     imports: [
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        NgZorroAntdModule
+        NgZorroAntdModule,
+        SellProductMonthRoutingModule
     ],
     declarations: [
         SellProductMonthComponent
@@ -19,4 +21,5 @@ import {SellProductMonthService} from './sellProductMonth.service';
     providers: [SellProductMonthService]
 })
 export class SellProductMonthModule {
+    mainConponent: Type<any> = SellProductMonthComponent;
 }
